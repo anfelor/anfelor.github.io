@@ -1,0 +1,89 @@
+body {
+  background-color: #FFFFFF;
+  margin: 0px;
+  padding: 0px;
+  color: #333333; }
+
+#container {
+  background-color: #FFFFFF;
+  overflow: hidden;
+  padding-right: 300px; }
+
+* html #container {
+  height: 1%; }
+
+#main {
+  background-color: #FFFFFF;
+  font-family: "EB Garamond", serif;
+  width: 80ex;
+  border-left: 400px solid #FAFAFA;
+  padding-top: 50px;
+  padding-left: 30px; }
+
+#sidebar {
+  background-color: #FAFAFA;
+  width: 300px;
+  padding: 50px 50px 100px 50px;
+  overflow: auto;
+  font-family: "Raleway", sans-serif;
+  position: fixed;
+  top: 0px;
+  bottom: 0px;
+  left: 0px; }
+  #sidebar h1 {
+    font-size: 1.6em;
+    border: 0px; }
+  #sidebar #frontpage {
+    padding-top: 350px; }
+    #sidebar #frontpage #lorenzen {
+      text-align: right;
+      margin-bottom: 30px;
+      position: absolute;
+      top: 50px;
+      left: 50px; }
+    #sidebar #frontpage #personal-picture {
+      width: 300px;
+      border-radius: 10px;
+      float: left;
+      position: relative;
+      z-index: 1; }
+    #sidebar #frontpage h1 {
+      display: inline-block;
+      margin: 0px;
+      text-align: right;
+      width: 5em;
+      position: absolute;
+      bottom: 35px;
+      right: 35px;
+      z-index: 5;
+      color: #FFFAFA; }
+
+#articlepage h1, article h2 {
+  border-bottom: 1px solid #333333; }
+
+h1 {
+  border: 10px solid red; }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Raleway", sans-serif;
+  font-weight: 700; }
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0; }
+
+li {
+  margin: 1em 0 1em 0; }
+
+a {
+  color: #333333;
+  text-decoration: none; }
+
+a:hover {
+  text-decoration: underline; }
+
+.fixend {
+  height: 1px; }
+
+/*# sourceMappingURL=main.css.map */
