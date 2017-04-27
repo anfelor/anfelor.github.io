@@ -1,0 +1,109 @@
+$color-background: #FFFFFF
+$color-main: #FFFFFF
+$color-sidebar: #FAFAFA
+$color-font: #333333
+
+$width-sidebar: 300px
+
+
+
+body
+  background-color: $color-background
+  margin: 0px
+  padding: 0px
+  color: $color-font
+
+#container
+  background-color: $color-background
+  overflow: hidden
+  padding-right: $width-sidebar
+
+
+// IE fix
+* html #container
+  height: 1%
+
+
+#main
+  background-color: $color-main
+  font-family: 'EB Garamond', serif
+  width: 80ex
+  border-left: ($width-sidebar + 100px) solid $color-sidebar
+  padding-top: 50px
+  padding-left: 30px
+
+
+#sidebar
+  background-color: $color-sidebar
+  width: $width-sidebar
+  padding: 50px 50px 100px 50px
+  overflow: auto
+  font-family: 'Raleway', sans-serif
+  position: fixed
+  top: 0px
+  bottom: 0px
+  left: 0px
+
+  h1
+    font-size: 1.6em
+    border: 0px
+
+  #frontpage
+    padding-top: ($width-sidebar + 50px)
+
+    #lorenzen
+      text-align: right
+      margin-bottom: 30px
+      position: absolute
+      top: 50px
+      left: 50px
+
+    #personal-picture
+      width: $width-sidebar
+      border-radius: 10px
+      float: left
+      position: relative
+      z-index: 1
+
+    h1
+      display: inline-block
+      margin: 0px
+      text-align: right
+      width: 5em
+      position: absolute
+      bottom: 35px
+      right: 35px
+      z-index: 5
+      color: #FFFAFA
+
+#articlepage h1, article h2
+  border-bottom: 1px solid $color-font
+
+h1
+  border: 10px solid red
+
+h1, h2, h3, h4, h5, h6
+  font-family: 'Raleway', sans-serif
+  font-weight: 700
+
+ul
+  list-style-type: none
+  margin: 0
+  padding: 0
+
+li
+  margin: 1em 0 1em 0
+
+a
+  color: $color-font
+  text-decoration: none
+
+a:hover
+  text-decoration: underline
+
+// If the content in #main is too long, then there will be an ugly gap
+// at the bottom, as the margin of the last element flows over the border
+// of the #main box. This fixes that error.
+.fixend
+  height: 1px
+

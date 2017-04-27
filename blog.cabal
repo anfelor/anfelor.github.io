@@ -1,0 +1,50 @@
+-- This file has been generated from package.yaml by hpack version 0.17.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           blog
+version:        0.0.0
+category:       Web
+homepage:       https://github.com/anfelor/blog#readme
+bug-reports:    https://github.com/anfelor/blog/issues
+author:         Anton Felix Lorenzen
+license:        MIT
+license-file:   LICENSE
+build-type:     Simple
+cabal-version:  >= 1.10
+
+source-repository head
+  type: git
+  location: https://github.com/anfelor/blog
+
+executable blog
+  main-is: Main.hs
+  hs-source-dirs:
+      src
+  default-extensions: NoImplicitPrelude RecordWildCards OverloadedLists OverloadedStrings TemplateHaskell QuasiQuotes DeriveFunctor
+  ghc-options: -Wall -Werror -Wno-missing-signatures
+  build-depends:
+      base >= 4.7 && < 5
+    , blaze-markup
+    , blaze-html
+    , bytestring
+    , containers
+    , directory
+    , filepath
+    , mtl
+    , pandoc
+    , pandoc-types
+    , protolude
+    , split
+    , template-haskell
+    , text
+    , time
+    , unordered-containers
+  other-modules:
+      Entries
+      Entries.E170426
+      Imports
+      NewEntry
+      Page
+      Types
+  default-language: Haskell2010

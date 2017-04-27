@@ -1,0 +1,38 @@
+name: blog
+author: Anton Felix Lorenzen
+license: MIT
+github: anfelor/blog
+category: Web
+
+ghc-options: -Wall -Werror -Wno-missing-signatures
+default-extensions:
+  - NoImplicitPrelude
+  - RecordWildCards
+  - OverloadedLists
+  - OverloadedStrings
+  - TemplateHaskell
+  - QuasiQuotes
+  - DeriveFunctor
+
+dependencies:
+  - base >= 4.7 && < 5
+  - blaze-markup
+  - blaze-html
+  - bytestring
+  - containers
+  - directory
+  - filepath
+  - mtl
+  - pandoc
+  - pandoc-types
+  - protolude
+  - split
+  - template-haskell
+  - text
+  - time
+  - unordered-containers
+
+executables:
+  blog:
+    main: Main.hs
+    source-dirs: src
