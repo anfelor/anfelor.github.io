@@ -64,7 +64,7 @@ standardPage :: Markup -> Markup -> Markup -> BL.ByteString
 standardPage headPart sidebarPart mainPart = renderMarkup $ html $ do
   head $ do
     headPart
-    link ! rel "stylesheet" ! type_ "text/css" ! href "../css/main.css"
+    link ! rel "stylesheet" ! type_ "text/css" ! href "/blog/css/main.css"
     link ! rel "stylesheet"
          ! href "https://fonts.googleapis.com/css?family=EB+Garamond|Raleway:400,700&amp;subset=latin-ext"
   body $ do
@@ -81,7 +81,7 @@ renderFrontPage ma headlines = standardPage
   (title categoryName)
   (div ! id "frontpage" $ do
     div ! id "lorenzen" $ do
-      img ! id "personal-picture" ! src "../img/DSCF0795_modified_small.JPG"
+      img ! id "personal-picture" ! src "/blog/img/DSCF0795_modified_small.JPG"
       h1 "Anton Felix Lorenzen"
     nav $ do
       ul $ forM_ ([minBound .. maxBound] :: [Category]) $ \c ->
