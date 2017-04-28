@@ -66,8 +66,6 @@ standardPage headPart sidebarPart mainPart = renderMarkup $ html $ do
     headPart
     meta ! charset "UTF-8"
     link ! rel "stylesheet" ! type_ "text/css" ! href "/css/main.css"
-    link ! rel "stylesheet"
-         ! href "https://fonts.googleapis.com/css?family=EB+Garamond|Raleway:400,700&amp;subset=latin-ext"
     script $ toMarkup $ unlines
       [ "var gaProperty = 'UA-98260474-1';"
       , "var disableStr = 'ga-disable-' + gaProperty;"
