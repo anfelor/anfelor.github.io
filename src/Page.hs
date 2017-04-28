@@ -66,6 +66,17 @@ standardPage headPart sidebarPart mainPart = renderMarkup $ html $ do
     headPart
     meta ! charset "UTF-8"
     link ! rel "stylesheet" ! type_ "text/css" ! href "/css/main.css"
+  body $ do
+    div ! id "container" $ do
+      div ! id "sidebar" $ do
+        sidebarPart
+        div ! id "imprint-link" $ do
+          a ! href "/blog/imprint.html" $ "Imprint"
+        div ! id "privacy-link" $ do
+          a ! href "/blog/privacy.html" $ "Privacy"
+      div ! id "main" $ do
+        mainPart
+        div ! class_ "fixend" $ pure ()
     script $ toMarkup $ unlines
       [ "var gaProperty = 'UA-98260474-1';"
       , "var disableStr = 'ga-disable-' + gaProperty;"
@@ -86,17 +97,6 @@ standardPage headPart sidebarPart mainPart = renderMarkup $ html $ do
       , "ga('set', 'anonymizeIp', true);"
       , "ga('send', 'pageview');"
       ]
-  body $ do
-    div ! id "container" $ do
-      div ! id "sidebar" $ do
-        sidebarPart
-        div ! id "imprint-link" $ do
-          a ! href "/blog/imprint.html" $ "Imprint"
-        div ! id "privacy-link" $ do
-          a ! href "/blog/privacy.html" $ "Privacy"
-      div ! id "main" $ do
-        mainPart
-        div ! class_ "fixend" $ pure ()
 
 
 renderFrontPage :: (Enum a, Bounded a, Display a) => Maybe a -> [Headline] -> BL.ByteString
@@ -228,11 +228,17 @@ renderPrivacy = standardPage
     h3 "Datenschutzerklärung für die Nutzung von Google Analytics"
     p "Diese Website nutzt Funktionen des Webanalysedienstes Google Analytics. Anbieter ist die Google Inc., 1600 Amphitheatre Parkway Mountain View, CA 94043, USA."
     p "Google Analytics verwendet so genannte \"Cookies\". Das sind Textdateien, die auf Ihrem Computer gespeichert werden und die eine Analyse der Benutzung der Website durch Sie ermöglichen. Die durch den Cookie erzeugten Informationen über Ihre Benutzung dieser Website werden in der Regel an einen Server von Google in den USA übertragen und dort gespeichert."
-    p "Mehr Informationen zum Umgang mit Nutzerdaten bei Google Analytics finden Sie in der Datenschutzerklärung von Google: https://support.google.com/analytics/answer/6004245?hl=de"
+    p $ do
+      "Mehr Informationen zum Umgang mit Nutzerdaten bei Google Analytics finden Sie in der Datenschutzerklärung von Google: "
+      a ! href "https://support.google.com/analytics/answer/6004245?hl=de" $ "https://support.google.com/analytics/answer/6004245?hl=de"
     h4 "Browser Plugin"
-    p "Sie können die Speicherung der Cookies durch eine entsprechende Einstellung Ihrer Browser-Software verhindern; wir weisen Sie jedoch darauf hin, dass Sie in diesem Fall gegebenenfalls nicht sämtliche Funktionen dieser Website vollumfänglich werden nutzen können. Sie können darüber hinaus die Erfassung der durch den Cookie erzeugten und auf Ihre Nutzung der Website bezogenen Daten (inkl. Ihrer IP-Adresse) an Google sowie die Verarbeitung dieser Daten durch Google verhindern, indem Sie das unter dem folgenden Link verfügbare Browser-Plugin herunterladen und installieren: https://tools.google.com/dlpage/gaoptout?hl=de"
+    p $ do
+      "Sie können die Speicherung der Cookies durch eine entsprechende Einstellung Ihrer Browser-Software verhindern; wir weisen Sie jedoch darauf hin, dass Sie in diesem Fall gegebenenfalls nicht sämtliche Funktionen dieser Website vollumfänglich werden nutzen können. Sie können darüber hinaus die Erfassung der durch den Cookie erzeugten und auf Ihre Nutzung der Website bezogenen Daten (inkl. Ihrer IP-Adresse) an Google sowie die Verarbeitung dieser Daten durch Google verhindern, indem Sie das unter dem folgenden Link verfügbare Browser-Plugin herunterladen und installieren: "
+      a ! href "https://tools.google.com/dlpage/gaoptout?hl=de" $ "https://tools.google.com/dlpage/gaoptout?hl=de"
     h4 "Widerspruch gegen Datenerfassung"
-    p "Sie können die Erfassung Ihrer Daten durch Google Analytics verhindern, indem Sie auf folgenden Link klicken. Es wird ein Opt-Out-Cookie gesetzt, der die Erfassung Ihrer Daten bei zukünftigen Besuchen dieser Website verhindert: Google Analytics deaktivieren"
+    p $ do
+      "Sie können die Erfassung Ihrer Daten durch Google Analytics verhindern, indem Sie auf folgenden Link klicken. Es wird ein Opt-Out-Cookie gesetzt, der die Erfassung Ihrer Daten bei zukünftigen Besuchen dieser Website verhindert: "
+      a ! href "javascript:gaOptout()" $ "Google Analytics deaktivieren"
     h4 "Auftragsdatenverarbeitung"
     "Wir haben mit Google einen Vertrag zur Auftragsdatenverarbeitung abgeschlossen und setzen die strengen Vorgaben der deutschen Datenschutzbehörden bei der Nutzung von Google Analytics vollständig um."
     h4 "IP-Anonymisierung"
