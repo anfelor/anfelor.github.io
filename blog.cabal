@@ -22,7 +22,7 @@ executable blog
   hs-source-dirs:
       src
   default-extensions: NoImplicitPrelude RecordWildCards OverloadedLists OverloadedStrings TemplateHaskell QuasiQuotes DeriveFunctor
-  ghc-options: -Wall -Werror -Wno-missing-signatures
+  ghc-options: -Wall -Werror -Wno-missing-signatures -Wno-unused-do-bind
   build-depends:
       base >= 4.7 && < 5
     , blaze-markup

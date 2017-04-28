@@ -28,6 +28,12 @@ writeFiles entries = do
   createDirectory "blog"
   setCurrentDirectory "blog"
 
+  BL.writeFile "imprint.html"
+    $ renderImprint
+
+  BL.writeFile "privacy.html"
+    $ renderPrivacy
+
   BL.writeFile "index.html"
     $ renderFrontPage (Nothing :: Maybe Category)
     $ entriesToHeadline entries
