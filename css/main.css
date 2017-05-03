@@ -1,31 +1,62 @@
+/********************************************************************************
+  This is a lucius file, named .css for editor use.
+  See http://www.yesodweb.com/book/shakespearean-templates.
+
+  The styles are intended to be used with purecss.io.
+********************************************************************************/
+
+
+/********************************************************************************
+  The fonts we will use later on
+********************************************************************************/
+
 @font-face {
   font-family: "EB Garamond";
-  src: url("EB_Garamond/EBGaramond-Regular.ttf") format("truetype");
+  src: url("/css/EB_Garamond/EBGaramond-Regular.ttf") format("truetype");
   font-weight: normal;
-  font-style: normal; }
+  font-style: normal;
+}
+
 @font-face {
   font-family: "Raleway";
-  src: url("Raleway/Raleway-Regular.ttf") format("truetype");
+  src: url("/css/Raleway/Raleway-Regular.ttf") format("truetype");
   font-weight: normal;
-  font-style: normal; }
+  font-style: normal;
+}
+
 @font-face {
   font-family: "Raleway";
-  src: url("Raleway/Raleway-Bold.ttf") format("truetype");
+  src: url("/css/Raleway/Raleway-Bold.ttf") format("truetype");
   font-weight: 700;
-  font-style: normal; }
+  font-style: normal;
+}
+
+/********************************************************************************
+  Definitions
+********************************************************************************/
+
+
+
+/********************************************************************************
+  General style declarations.
+********************************************************************************/
+
 body {
   background-color: #FFFFFF;
   margin: 0px;
   padding: 0px;
-  color: #333333; }
+  color: #333333;
+}
 
 #container {
   background-color: #FFFFFF;
   overflow: hidden;
-  padding-right: 300px; }
+  padding-right: 300px;
+}
 
 * html #container {
-  height: 1%; }
+  height: 1%;
+}
 
 #main {
   background-color: #FFFFFF;
@@ -33,7 +64,9 @@ body {
   width: 80ex;
   border-left: 400px solid #FAFAFA;
   padding-top: 50px;
-  padding-left: 30px; }
+  padding-left: 30px;
+  text-align: justify;
+}
 
 #sidebar {
   background-color: #FAFAFA;
@@ -44,24 +77,33 @@ body {
   position: fixed;
   top: 0px;
   bottom: 0px;
-  left: 0px; }
+  left: 0px;
+}
+
   #sidebar h1 {
     font-size: 1.6em;
-    border: 0px; }
+    border: 0px;
+}
+
   #sidebar #frontpage {
-    padding-top: 350px; }
+    padding-top: 350px;
+}
+
     #sidebar #frontpage #lorenzen {
       text-align: right;
       margin-bottom: 30px;
       position: absolute;
       top: 50px;
-      left: 50px; }
+      left: 50px;
+}
+
     #sidebar #frontpage #personal-picture {
       width: 300px;
       border-radius: 10px;
       float: left;
       position: relative;
-      z-index: 1; }
+      z-index: 1;
+}
     #sidebar #frontpage h1 {
       display: inline-block;
       margin: 0px;
@@ -71,34 +113,41 @@ body {
       bottom: 35px;
       right: 35px;
       z-index: 5;
-      color: #FFFAFA; }
+      color: #FFFAFA;
+}
 
 #articlepage h1, article h2 {
-  border-bottom: 1px solid #333333; }
+  border-bottom: 1px solid #333333;
+}
 
 h1 {
-  border: 10px solid red; }
+  border: 10px solid red;
+}
 
 h1, h2, h3, h4, h5, h6 {
   font-family: "Raleway", sans-serif;
-  font-weight: 700; }
+  font-weight: 700;
+}
 
 ul {
   list-style-type: none;
   margin: 0;
-  padding: 0; }
+  padding: 0;
+}
 
 li {
-  margin: 1em 0 1em 0; }
+  margin: 1em 0 1em 0;
+}
 
 a {
   color: #333333;
-  text-decoration: none; }
+  text-decoration: none;
+}
 
 a:hover {
-  text-decoration: underline; }
+  text-decoration: underline;
+}
 
 .fixend {
-  height: 1px; }
-
-/*# sourceMappingURL=main.css.map */
+  height: 1px;
+}

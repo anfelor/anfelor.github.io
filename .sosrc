@@ -1,0 +1,14 @@
+ - patterns:
+   - ^[^\#\.]*\.hs$
+   - ^package.yaml$
+   commands:
+   - stack build --fast
+   - stack exec blog
+   - tree blog/
+
+ - patterns:
+   - ^[^\#\.]*\.css$
+   commands:
+   - stack clean
+   - stack build --fast
+   - stack exec blog

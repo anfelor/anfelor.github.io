@@ -1,3 +1,5 @@
+{-# Language NoOverloadedLists #-}
+
 module Page where
 
 import Imports hiding (head, link, div, map)
@@ -13,6 +15,7 @@ import Text.Blaze.Html5.Attributes hiding (title)
 import Text.Blaze.Renderer.Utf8 (renderMarkup)
 import qualified Data.HashSet as Set
 import qualified Data.Text as T
+import Text.Lucius
 
 
 data Headline = Headline
@@ -65,7 +68,10 @@ standardPage headPart sidebarPart mainPart = renderMarkup $ html $ do
   head $ do
     headPart
     meta ! charset "UTF-8"
-    link ! rel "stylesheet" ! type_ "text/css" ! href "/css/main.css"
+    link ! rel "stylesheet" ! href "https://unpkg.com/purecss@0.6.2/build/pure-min.css"
+         ! customAttribute "integrity" "sha384-UQiGfs9ICog+LwheBSRCt1o5cbyKIHbwjWscjemyBMT9YCUMZffs6UqUTd0hObXD"
+         ! customAttribute "crossorigin" "anonymous"
+    Text.Blaze.Html5.style $ toMarkup $ renderCss $ $(luciusFile "css/main.css") luciusRT
   body $ do
     div ! id "container" $ do
       div ! id "sidebar" $ do
