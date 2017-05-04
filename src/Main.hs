@@ -40,7 +40,7 @@ writeFiles entries = do
 
   let cats = [minBound .. maxBound] :: [Category]
   forM_ cats $ \c -> do
-    let name = T.unpack $ urlFormat c
+    let name = T.unpack $ displayUrl c
     let entr = filterEntries c entries
     createDirectoryIfMissing False name
     BL.writeFile (name </> "index.html")
@@ -49,7 +49,7 @@ writeFiles entries = do
 
   let keys = [minBound .. maxBound] :: [Keyword]
   forM_ keys $ \k -> do
-    let name = T.unpack $ urlFormat k
+    let name = T.unpack $ displayUrl k
     let entr = filterEntries k entries
     createDirectoryIfMissing False name
     BL.writeFile (name </> "index.html")
@@ -57,6 +57,7 @@ writeFiles entries = do
       $ entriesToHeadline entr
 
   forM_ entries $ \(u, e) -> do
+    createDirectoryIfMissing False "posts"
     BL.writeFile (T.unpack u) $ renderPage e
 
 class (Bounded a, Enum a, Display a) => FrontpageItem a where

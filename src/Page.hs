@@ -13,9 +13,9 @@ import Text.Blaze
 import Text.Blaze.Html5
 import Text.Blaze.Html5.Attributes hiding (title)
 import Text.Blaze.Renderer.Utf8 (renderMarkup)
+import qualified Text.Blaze.Renderer.Text as TextRenderer
 import qualified Data.HashSet as Set
 import qualified Data.Text as T
-import Text.Lucius
 
 
 data Headline = Headline
@@ -41,7 +41,7 @@ addEntryURLs = fmap fst . flip runStateT Set.empty . mapM go . sort
     go :: Entry a -> StateT (Set.HashSet Text) (Either (Entry a)) (Text, Entry a)
     go e = do
       used <- get
-      let poss = fmap ((<>".html") . T.intercalate "-" . fmap urlFormat)
+      let poss = fmap (("posts/"<>) . (<>".html") . T.intercalate "-" . fmap displayUrl)
                    $ permutations $ toList $ entryKeywords e
       let choose = filter (`notElem` used) poss
       case choose of
@@ -63,94 +63,92 @@ entriesToHeadline = fmap go
       , headlineURL = url
       }
 
-standardPage :: Markup -> Markup -> Markup -> BL.ByteString
-standardPage headPart sidebarPart mainPart = renderMarkup $ html $ do
+standardPage :: Markup -> Markup -> Markup -> Markup -> BL.ByteString
+standardPage pageTitle pageDescription sidebarPart mainPart = renderMarkup $ html $ do
   head $ do
-    headPart
+    title pageTitle
     meta ! charset "UTF-8"
+    meta ! name "viewport" ! content "width=device-width, initial-scale=1.0"
+    meta ! name "description" ! (content $ toAttr pageDescription)
+    meta ! name "twitter:card" ! content "summary"
+    meta ! name "twitter:site" ! content "@anton_lorenzen"
+    meta ! name "twitter:title" ! content (toAttr pageTitle)
+    meta ! name "twitter:description" ! content (toAttr pageDescription)
+    -- meta ! name "twitter:image" ! content ""
     link ! rel "stylesheet" ! href "https://unpkg.com/purecss@0.6.2/build/pure-min.css"
          ! customAttribute "integrity" "sha384-UQiGfs9ICog+LwheBSRCt1o5cbyKIHbwjWscjemyBMT9YCUMZffs6UqUTd0hObXD"
          ! customAttribute "crossorigin" "anonymous"
-    Text.Blaze.Html5.style $ toMarkup $ renderCss $ $(luciusFile "css/main.css") luciusRT
+    link ! rel "stylesheet" ! href "https://unpkg.com/purecss@0.6.2/build/grids-responsive-min.css"
+    Text.Blaze.Html5.style $ toMarkup ($(loadCss) :: Text)
   body $ do
-    div ! id "container" $ do
-      div ! id "sidebar" $ do
-        sidebarPart
-        div ! id "imprint-link" $ do
-          a ! href "/blog/imprint.html" $ "Imprint"
-        div ! id "privacy-link" $ do
-          a ! href "/blog/privacy.html" $ "Privacy"
+    div ! id "layout" $ do
+      -- Hamburger menu
+      a ! href "#menu" ! id "menuLink" ! class_ "menu-link"
+        $ Text.Blaze.Html5.span $ mempty
+      div ! id "menu" $ do
+        div ! class_ "pure-menu" $ do
+          a ! class_ "pure-menu-heading" ! href "/blog" $ "Anton Felix Lorenzen"
+          sidebarPart
       div ! id "main" $ do
-        mainPart
-        div ! class_ "fixend" $ pure ()
-    script $ toMarkup $ unlines
-      [ "var gaProperty = 'UA-98260474-1';"
-      , "var disableStr = 'ga-disable-' + gaProperty;"
-      , "if (document.cookie.indexOf(disableStr + '=true') > -1) {"
-        , "window[disableStr] = true;"
-      , "}"
-      , "function gaOptout() {"
-        , "document.cookie = disableStr + '=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/';"
-        , "window[disableStr] = true;"
-      , "}"
-      ]
-    script $ toMarkup $ unlines
-      [ "(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){"
-      , "(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),"
-      , "m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)"
-      , "})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');"
-      , "ga('create', 'UA-98260474-1', 'auto');"
-      , "ga('set', 'anonymizeIp', true);"
-      , "ga('send', 'pageview');"
-      ]
+        div ! class_ "header" $ do
+          h1 pageTitle
+          p pageDescription
+        div ! class_ "content" $ do
+          mainPart
+        div ! class_ "footer" $ do
+          div ! id "imprint-link" $ do
+            a ! href "/blog/imprint.html" $ "Imprint"
+          div ! id "privacy-link" $ do
+            a ! href "/blog/privacy.html" $ "Privacy"
+    script $ toMarkup ($(loadJavaScript) :: Text)
+  where
+    toAttr = toValue . TextRenderer.renderMarkup . contents
 
 
 renderFrontPage :: (Enum a, Bounded a, Display a) => Maybe a -> [Headline] -> BL.ByteString
 renderFrontPage ma headlines = standardPage
-  (title categoryName)
+  (toMarkup $ maybe "Posts" displayTitle ma)
+  (toMarkup $ maybe "" displayDescription ma)
   (div ! id "frontpage" $ do
-    div ! id "lorenzen" $ do
-      img ! id "personal-picture" ! src "/img/DSCF0795_modified_small.JPG"
-      h1 "Anton Felix Lorenzen"
-    nav $ do
-      ul $ forM_ ([minBound .. maxBound] :: [Category]) $ \c ->
-        li $ a ! href (stringValue $ T.unpack $ urlFormat c <> "/") $ toMarkup $ display c)
+    ul ! class_ "pure-menu-list"
+       $ forM_ ([minBound .. maxBound] :: [Category]) $ \c ->
+          li ! class_ "pure-menu-item"
+             $ a ! class_ "pure-menu-link" ! href (stringValue $ T.unpack $ "/blog/" <> displayUrl c <> "/")
+                 $ toMarkup $ displayTitle c)
   (ul $ do
     forM_ headlines $ \(Headline {..}) ->
       li $ do
         h2 $ do
-          a ! href (stringValue $ T.unpack $ headlineURL) $ toMarkup $ headlineTitle
+          a ! href (stringValue . ("/blog/"<>) . T.unpack $ headlineURL) $ toMarkup $ headlineTitle
         p $ preEscapedString $ headlineAbstract)
-  where
-    categoryName = toMarkup $ maybe "" display ma
 
 
 headersMinusTwo :: Pandoc -> Pandoc
 headersMinusTwo = walk go
   where
     go :: Block -> Block
-    go (Header n attr inl) = Header (n+2) attr inl
+    go (Header n attr inl) = Header (n+1) attr inl
     go block = block
 
 allHeaders :: Pandoc -> [(Int, Html)]
 allHeaders pan@(Pandoc mt _)= query go pan
   where
     go :: Block -> [(Int, Html)]
-    go (Header n _ inl) = [(n, writeHtml def (Pandoc mt [Para inl]))]
+    go (Header n _ inl) = [(n, writeHtml def (Pandoc mt [Plain inl]))]
     go _ = []
 
 renderPage :: Entry Pandoc -> BL.ByteString
 renderPage (Entry{..}) = standardPage
-  (title $ toMarkup entryTitle)
-  (div ! id "articlepage" $ do
-    h1 "Anton Felix Lorenzen"
-    nav $ do
-      -- TODO: Use the level information to build a nested tree of headlines.
-      ul $ forM_ (allHeaders entryContent) $ \(_, nm) -> do
-        li $ a ! href (stringValue $ format
-                      $ renderMarkup $ contents nm) $ nm)
+  (toMarkup entryTitle)
+  (toMarkup $ writeHtml def entryAbstract)
+  -- TODO: Use the level information to build a nested tree of headlines.
+  (ul ! class_ "pure-menu-list"
+      $ forM_ (allHeaders entryContent) $ \(_, nm) -> do
+         li ! class_ "pure-menu-item"
+            $ a ! class_ "pure-menu-link"
+                ! href (stringValue $ format $ renderMarkup $ contents nm)
+                $ nm)
   (article $ do
-    h2 $ toMarkup entryTitle
     writeHtml def (headersMinusTwo entryContent))
 
   where
@@ -165,11 +163,10 @@ renderPage (Entry{..}) = standardPage
 
 renderImprint :: BL.ByteString
 renderImprint = standardPage
-  (title "Imprint")
-  (div ! id "articlepage" $ do
-    h1 "Anton Felix Lorenzen")
+  "Impressum"
+  ""
+  mempty
   (article $ do
-    h2 "Impressum"
     h3 "Angaben gemäß § 5 TMG:"
     p "Anton Felix Lorenzen"
     p "Osterbekstr. 102"
@@ -219,11 +216,10 @@ renderImprint = standardPage
 
 renderPrivacy :: BL.ByteString
 renderPrivacy = standardPage
-  (title "Privacy")
-  (div ! id "articlepage" $ do
-    h1 "Anton Felix Lorenzen")
+  "Datenschutz"
+  ""
+  mempty
   (article $ do
-    h2 "Datenschutz"
     p "Die Betreiber dieser Seiten nehmen den Schutz Ihrer persönlichen Daten sehr ernst. Wir behandeln Ihre personenbezogenen Daten vertraulich und entsprechend der gesetzlichen Datenschutzvorschriften sowie dieser Datenschutzerklärung."
     p "Die Nutzung unserer Webseite ist in der Regel ohne Angabe personenbezogener Daten möglich. Soweit auf unseren Seiten personenbezogene Daten (beispielsweise Name, Anschrift oder E-Mail-Adressen) erhoben werden, erfolgt dies, soweit möglich, stets auf freiwilliger Basis. Diese Daten werden ohne Ihre ausdrückliche Zustimmung nicht an Dritte weitergegeben."
     p "Wir weisen darauf hin, dass die Datenübertragung im Internet (z.B. bei der Kommunikation per E-Mail) Sicherheitslücken aufweisen kann. Ein lückenloser Schutz der Daten vor dem Zugriff durch Dritte ist nicht möglich."

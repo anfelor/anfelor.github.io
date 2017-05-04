@@ -39,8 +39,8 @@ dependencies:
   - mtl
   - pandoc
   - pandoc-types
+  - process
   - protolude
-  - shakespeare
   - split
   - template-haskell
   - text

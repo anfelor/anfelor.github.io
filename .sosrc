@@ -1,3 +1,5 @@
+
+# Haskell files
  - patterns:
    - ^[^\#\.]*\.hs$
    - ^package.yaml$
@@ -6,9 +8,14 @@
    - stack exec blog
    - tree blog/
 
+
+# External files (css, typescript)
  - patterns:
-   - ^[^\#\.]*\.css$
+   - ^([^\#\.]*\/)?([^\#\.\/\\]*\.(scss|ts))$
    commands:
+
+   # If the external file updated, it has to be
+   # included, thus we have to recompile the whole project.
    - stack clean
    - stack build --fast
    - stack exec blog
