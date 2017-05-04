@@ -34,7 +34,7 @@ standardPage Page{..} = renderMarkup $ html $ do
     meta ! name "twitter:site" ! content "@anton_lorenzen"
     meta ! name "twitter:title" ! content (toAttr pageTitle)
     meta ! name "twitter:description" ! content (toAttr pageDescription)
-    meta ! name "twitter:image" ! content "/blog/img/anfelor_profile.jpg"
+    meta ! name "twitter:image" ! content "https://anfelor.github.io/img/anfelor_profile.jpg"
     link ! rel "stylesheet" ! href "https://unpkg.com/purecss@0.6.2/build/pure-min.css"
          ! customAttribute "integrity" "sha384-UQiGfs9ICog+LwheBSRCt1o5cbyKIHbwjWscjemyBMT9YCUMZffs6UqUTd0hObXD"
          ! customAttribute "crossorigin" "anonymous"
