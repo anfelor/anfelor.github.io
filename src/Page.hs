@@ -30,6 +30,12 @@ standardPage Page{..} = renderMarkup $ html $ do
     meta ! charset "UTF-8"
     meta ! name "viewport" ! content "width=device-width, initial-scale=1.0"
     meta ! name "description" ! (content $ toAttr pageDescription)
+    link ! rel "shortcut icon" ! href "/img/favicon.ico"
+    link ! rel "icon" ! type_ "image/png" ! href "/img/favicon.png" ! sizes "32x32"
+    link ! rel "apple-touch-icon" ! sizes "180x180" ! href "/img/apple-touch-icon.png"
+    meta ! name "msapplication-TileColor" ! content "#ffffff"
+    meta ! name "msapplication-TileImage" ! content "/img/mstile-144x144.png"
+
     meta ! name "twitter:card" ! content "summary"
     meta ! name "twitter:site" ! content "@anton_lorenzen"
     meta ! name "twitter:title" ! content (toAttr pageTitle)
