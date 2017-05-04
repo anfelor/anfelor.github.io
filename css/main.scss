@@ -138,6 +138,8 @@ appears on the left side of the page.
     color: #999;
     border: none;
     padding: 0.6em 0 0.6em 0.6em;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   /*
@@ -194,6 +196,13 @@ appears on the left side of the page.
     font-size: 110%;
     color: #fff;
     margin: 0;
+  }
+
+  .menu-bottom {
+      position: absolute;
+      left: 0px;
+      right: 0px;
+      bottom: 0px;
   }
 }
 

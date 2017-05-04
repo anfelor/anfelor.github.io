@@ -1,6 +1,7 @@
 module Entries.E170426 where
 
-import NewEntry
+import Imports
+import Types
 
 entry = Entry
   { entryTitle = "Hello World!"
@@ -9,7 +10,7 @@ entry = Entry
   , entryKeywords = [Blogging]
   , entryCategory = []
   , entryLanguage = English
-  , entryComments = Nothing
+  , entryComments = Github
   , entryAbstract = [md|
 
 This is my first blog post.

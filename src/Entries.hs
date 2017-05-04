@@ -3,10 +3,11 @@ module Entries
   ) where
 
 import Imports
-import NewEntry
-import Text.Pandoc
+import Types
 
 import qualified Entries.E170426
+import qualified Entries.Imprint
+import qualified Entries.Privacy
 
 go :: Entry (Either PandocError Pandoc) -> Either (Entry (Either PandocError Pandoc)) (Entry Pandoc)
 go x = case (entryContent x, entryAbstract x) of
@@ -17,4 +18,6 @@ go x = case (entryContent x, entryAbstract x) of
 entries :: Either (Entry (Either PandocError Pandoc)) [Entry Pandoc]
 entries = sequence $ fmap go
   [ Entries.E170426.entry
+  , Entries.Imprint.entry
+  , Entries.Privacy.entry
   ]

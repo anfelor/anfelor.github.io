@@ -4,11 +4,10 @@ import Imports
 import qualified Entries
 import Page
 import Types
-import NewEntry
 
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.Text as T
-import Text.Pandoc
+import Text.Pandoc.PDF
 
 main :: IO ()
 main = do
@@ -27,12 +26,6 @@ writeFiles entries = do
   removePathForcibly "blog"
   createDirectory "blog"
   setCurrentDirectory "blog"
-
-  BL.writeFile "imprint.html"
-    $ renderImprint
-
-  BL.writeFile "privacy.html"
-    $ renderPrivacy
 
   BL.writeFile "index.html"
     $ renderFrontPage (Nothing :: Maybe Category)
@@ -56,9 +49,29 @@ writeFiles entries = do
       $ renderFrontPage (Just k)
       $ entriesToHeadline entr
 
+  latexTemplate <- readFile "../css/template.tex"
   forM_ entries $ \(u, e) -> do
     createDirectoryIfMissing False "posts"
-    BL.writeFile (T.unpack u) $ renderPage e
+    BL.writeFile (T.unpack u) $ renderPage (u, e)
+    pdf <- makePDF "xelatex" writeLaTeX (pdfOptions e latexTemplate) (entryContent e)
+    case pdf of
+      Left b -> putStr ("Error while creating pdf: " <> b)
+      Right b -> BL.writeFile (T.unpack u -<.> ".pdf") b
+
+  where
+    pdfOptions e tmpl = def
+      { writerHighlight = True
+      , writerTemplate = Just $ T.unpack tmpl
+      , writerVariables =
+        [ ("title", T.unpack $ entryTitle e)
+        , ("author", "Anton Felix Lorenzen")
+        , ("documentclass", "article")
+        , ("papersize", "a4")
+        , ("fontsize", "12pt")
+        , ("linestretch", "1.5")
+        , ("geometry", "margin=3cm")
+        ]
+      }
 
 class (Bounded a, Enum a, Display a) => FrontpageItem a where
   filterEntries :: a -> [(b, Entry c)] -> [(b, Entry c)]

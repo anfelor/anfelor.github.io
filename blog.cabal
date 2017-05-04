@@ -53,8 +53,9 @@ executable blog
   other-modules:
       Entries
       Entries.E170426
+      Entries.Imprint
+      Entries.Privacy
       Imports
-      NewEntry
       Page
       Types
   default-language: Haskell2010
