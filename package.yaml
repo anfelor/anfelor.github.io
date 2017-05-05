@@ -21,6 +21,7 @@ ld-options:  -fuse-ld=gold
 
 default-extensions:
   - DeriveFunctor
+  - DeriveGeneric
   - NoImplicitPrelude
   - OverloadedLists
   - OverloadedStrings
@@ -36,6 +37,7 @@ dependencies:
   - bytestring
   - containers
   - directory
+  - dhall
   - filepath
   - hashable
   - mtl

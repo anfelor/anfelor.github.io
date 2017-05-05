@@ -1,18 +1,12 @@
-module Entries.Privacy where
-
-import Imports
-import Types
-
-entry = Entry
-  { entryTitle = "Datenschutz"
-  , entryCreated = fromGregorian 2017 05 04
-  , entryUpdated = fromGregorian 2017 05 04
-  , entryKeywords = [Blogging]
-  , entryLanguage = German
-  , entryComments = Github
-  , entryImportance = Ignore
-  , entryAbstract = [md||]
-  , entryContent = [md|
+{ entryTitle = "Datenschutz"
+, entryCreated = (2017, 05, 04)
+, entryUpdated = (2017, 05, 04)
+, entryKeywords = [Blogging]
+, entryLanguage = German
+, entryComments = Github
+, entryImportance = Ignore
+, entryAbstract = ""
+, entryContent = ''
 
 Die Betreiber dieser Seiten nehmen den Schutz Ihrer persönlichen Daten sehr ernst. Wir behandeln Ihre
 personenbezogenen Daten vertraulich und entsprechend der gesetzlichen Datenschutzvorschriften sowiedieser Datenschutzerklärung.
@@ -233,4 +227,4 @@ von Werbeinformationen, etwa durch Spam-E-Mails, vor.
 
 *Quelle*: [https://www.e-recht24.de/muster-datenschutzerklaerung.html](https://www.e-recht24.de/muster-datenschutzerklaerung.html)
 
-|]}
+''}

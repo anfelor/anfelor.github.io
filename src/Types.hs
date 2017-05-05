@@ -1,33 +1,42 @@
 module Types where
 
-import Imports
+import Imports hiding (Text)
 import qualified Data.HashSet as Set
 import qualified Data.Text as T
+import Dhall (Interpret(..), Natural, Text)
+
+
+-- orphan instances
+
+instance (Interpret a) => Interpret (NonEmpty a)
+instance (Interpret a) => Interpret [a]
+instance (Interpret a, Interpret b, Interpret c) => Interpret (a,b,c)
 
 
 -- | A blog entry.
-data Entry a = Entry
+data Entry a b = Entry
   { entryTitle :: Text
-  , entryCreated :: Day
-  , entryUpdated :: Day
+  , entryCreated :: b
+  , entryUpdated :: b
   , entryKeywords :: NonEmpty Keyword
   , entryLanguage :: Language
   , entryImportance :: Importance
   , entryAbstract :: a
   , entryContent :: a
   , entryComments :: Comments
-  } deriving (Show, Functor)
+  } deriving (Show, Functor, Generic)
 
-instance Eq (Entry a) where
+instance (Eq b) => Eq (Entry a b) where
   a == b = entryTitle a == entryTitle b
         && entryCreated a == entryCreated b
 
-instance Ord (Entry a) where
+instance (Ord b) => Ord (Entry a b) where
   compare a b = case comparing entryCreated a b of
     LT -> LT
     GT -> GT
     EQ -> comparing entryTitle a b
 
+instance (Interpret a, Interpret b) => Interpret (Entry a b)
 
 -- | A reduced version of a blog post,
 -- featuring only information used in the
@@ -37,7 +46,7 @@ data Headline = Headline
   , headlineCreated :: Day
   , headlineUpdated :: Day
   , headlineKeywords :: NonEmpty Keyword
-  , headlineURL :: Text
+  , headlineURL :: T.Text
   , headlineAbstract :: String
   } deriving (Eq, Show)
 
@@ -48,14 +57,14 @@ instance Ord Headline where
     EQ -> comparing headlineTitle h g
 
 
-addEntryURLs :: [Entry a] -> Either (Entry a) [(Text, Entry a)]
+addEntryURLs :: Ord b => [Entry a b] -> Either (Entry a b) [(T.Text, Entry a b)]
 addEntryURLs = fmap fst . flip runStateT Set.empty . mapM go . sort
   where
-    go :: Entry a -> StateT (Set.HashSet Text) (Either (Entry a)) (Text, Entry a)
+    go :: Entry a b -> StateT (Set.HashSet T.Text) (Either (Entry a b)) (T.Text, Entry a b)
     go e@Entry{..} = do
       used <- get
       let poss = fmap (T.intercalate "-" . fmap displayUrl) $ permutations $ toList entryKeywords
-          title = displayUrl entryTitle
+          title = displayUrl (toStrict entryTitle)
           urls = fmap (\p -> [txt|posts/#{title}-#{p}.html|]) poss
           choose = filter (`notElem` used) urls
       case choose of
@@ -64,7 +73,7 @@ addEntryURLs = fmap fst . flip runStateT Set.empty . mapM go . sort
           put (Set.insert x used)
           pure (x, e)
 
-entriesToHeadline :: [(Text, Entry Pandoc)] -> [Headline]
+entriesToHeadline :: [(T.Text, Entry Pandoc Day)] -> [Headline]
 entriesToHeadline = fmap go
   where
     go (url, Entry {..}) = Headline
@@ -78,7 +87,7 @@ entriesToHeadline = fmap go
 
 
 data PageData = PageData
-  { pageLocation :: Text
+  { pageLocation :: T.Text
   , pageLastMod :: Day
   , pageType :: PageType
   } deriving (Eq, Show)
@@ -91,21 +100,27 @@ data PageType = Article Importance | FrontPage
 data Language
   = English
   | German
-  deriving (Eq, Bounded, Enum, Show)
+  deriving (Eq, Bounded, Enum, Show, Generic)
+
+instance Interpret Language
 
 
 -- | The place where comments should be posted.
 data Comments
  = Reddit Text
  | Github -- ^ open a new issue on github.
- deriving (Eq, Show)
+ deriving (Eq, Show, Generic)
+
+instance Interpret Comments
 
 
 data Importance
   = Ignore
   | Normal
   | Promote
-  deriving (Eq, Show)
+  deriving (Eq, Show, Generic)
+
+instance Interpret Importance
 
 -- | The keywords for a blog post.
 -- Using Data types instead of text has the advantage,
@@ -116,7 +131,9 @@ data Keyword
  | Haskell
  | ReadingList
  | ShortStories
- deriving (Eq, Bounded, Enum, Show)
+ deriving (Eq, Bounded, Enum, Show, Generic)
+
+instance Interpret Keyword
 
 instance Display Keyword where
   displayTitle Haskell = "Haskell"

@@ -1,22 +1,16 @@
-module Entries.E170426 where
-
-import Imports
-import Types
-
-entry = Entry
-  { entryTitle = "Hello World!"
-  , entryCreated = fromGregorian 2017 04 26
-  , entryUpdated = fromGregorian 2017 04 26
-  , entryKeywords = [Blogging]
-  , entryLanguage = English
-  , entryComments = Github
-  , entryImportance = Normal
-  , entryAbstract = [md|
+{ entryTitle = "Hello World!"
+, entryCreated = (2017, 04, 26)
+, entryUpdated = (2017, 04, 26)
+, entryKeywords = [Blogging]
+, entryLanguage = English
+, entryComments = Github
+, entryImportance = Normal
+, entryAbstract = ''
 
 This is my first blog post. In it I explore the rich world of lorem ipsums.
 
-|]
-  , entryContent = [md|
+''
+, entryContent = ''
 
 # This is some headline
 
@@ -67,4 +61,4 @@ Dolorem quod cumque numquam esse aspernatur perferendis sit et. Nobis et ipsam e
 Earum quos reprehenderit eligendi quos aperiam. Sit vel quia voluptatem corporis sint. Blanditiis expedita illum est amet qui cupiditate temporibus repellat. Fugiat ipsa accusamus similique consequatur in est. Ad commodi vitae sint. Voluptas perferendis quis adipisci.
 
 
-|]}
+''}

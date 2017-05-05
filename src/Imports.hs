@@ -7,6 +7,8 @@ module Imports
 
 import Protolude as Exports hiding ((<.>))
 
+import Control.Monad as Exports hiding ((<$!>))
+
 import Data.Char as Exports
 import Data.List.Split as Exports
 import Data.List.NonEmpty as Exports (NonEmpty)

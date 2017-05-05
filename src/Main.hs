@@ -1,30 +1,41 @@
 module Main where
 
 import Imports
-import qualified Entries
 import Page
 import Types
 import Sitemap
 
+import qualified Dhall
+
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.Text as T
+import qualified Data.Text.Lazy as TL
 import Text.Pandoc.PDF
 import Data.Time.Clock
 import Data.Time.Calendar
 
 main :: IO ()
 main = do
-  case Entries.entries of
-    Left pe -> do
-      putText "Couldn't parse the content of entry:"
-      print pe
-    Right en -> case addEntryURLs en of
-      Left e -> do
-        putText "Couldn't create a unique url for entry:"
-        print e
-      Right entries -> writeFiles entries
+  posts <- filterM doesFileExist =<< listDirectory "posts"
+  entries <- forM posts $ \p -> do
+    ent <- Dhall.detailed $ Dhall.input
+      (Dhall.auto :: Dhall.Type (Entry TL.Text (Dhall.Natural, Dhall.Natural, Dhall.Natural)))
+      (TL.pack $ "./" ++ p)
+    let entry = entry {
+          entryCreated = (\(a,b,c) -> fromGregorian (fromIntegral a) (fromIntegral b) (fromIntegral c)) (entryCreated ent)
+        , entryUpdated = (\(a,b,c) -> fromGregorian (fromIntegral a) (fromIntegral b) (fromIntegral c)) (entryUpdated ent)
+        }
+    case (readMarkdown def (entryAbstract entry), readMarkdown def (entryContent entry)) of
+      (Right p1, Right p2) -> pure $ entry {entryAbstract = p1, entryContent = p2}
+      (Left p1, _) -> fail $ "Encountered pandoc error: " <> show p1
+      (_, Left p2) -> fail $ "Encountered pandoc error: " <> show p2
 
-writeFiles :: [(Text, Entry Pandoc)] -> IO ()
+  case addEntryURLs entries of
+    Left e -> do
+      fail $ "Couldn't create a unique url for entry:" <> show e
+    Right en -> writeFiles en
+
+writeFiles :: [(Text, Entry Pandoc Day)] -> IO ()
 writeFiles entries = do
   removePathForcibly "blog"
   createDirectory "blog"
@@ -87,7 +98,7 @@ writeFiles entries = do
       { writerHighlight = True
       , writerTemplate = Just $ T.unpack tmpl
       , writerVariables =
-        [ ("title", T.unpack $ entryTitle e)
+        [ ("title", TL.unpack $ entryTitle e)
         , ("author", "Anton Felix Lorenzen")
         , ("documentclass", "article")
         , ("papersize", "a4")

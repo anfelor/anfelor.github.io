@@ -1,18 +1,12 @@
-module Entries.Imprint where
-
-import Imports
-import Types
-
-entry = Entry
-  { entryTitle = "Impressum"
-  , entryCreated = fromGregorian 2017 05 04
-  , entryUpdated = fromGregorian 2017 05 04
-  , entryKeywords = [Blogging]
-  , entryLanguage = German
-  , entryComments = Github
-  , entryImportance = Ignore
-  , entryAbstract = [md||]
-  , entryContent = [md|
+{ entryTitle = "Impressum"
+, entryCreated = (2017, 05, 04)
+, entryUpdated = (2017, 05, 04)
+, entryKeywords = [Blogging]
+, entryLanguage = German
+, entryComments = Github
+, entryImportance = Ignore
+, entryAbstract = ""
+, entryContent = ''
 
 # Angaben gemäß § 5 TMG
 
@@ -75,4 +69,4 @@ von Werbeinformationen, etwa durch Spam-E-Mails, vor.
 
 *Quelle:* [https://www.e-recht24.de](https://www.e-recht24.de)
 
-|]}
+''}
