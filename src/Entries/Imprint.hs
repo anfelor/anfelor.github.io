@@ -66,6 +66,13 @@ beachtet. Insbesondere werden Inhalte Dritter als solche gekennzeichnet. Sollten
 Urheberrechtsverletzung aufmerksam werden, bitten wir um einen entsprechenden Hinweis. Bei
 Bekanntwerden von Rechtsverletzungen werden wir derartige Inhalte umgehend entfernen.
 
+# Widerspruch Werbe-Mails
+
+Der Nutzung von im Rahmen der Impressumspflicht veröffentlichten Kontaktdaten zur Übersendung von
+nicht ausdrücklich angeforderter Werbung und Informationsmaterialien wird hiermit widersprochen. Die
+Betreiber der Seiten behalten sich ausdrücklich rechtliche Schritte im Falle der unverlangten Zusendung
+von Werbeinformationen, etwa durch Spam-E-Mails, vor.
+
 *Quelle:* [https://www.e-recht24.de](https://www.e-recht24.de)
 
 |]}

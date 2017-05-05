@@ -13,14 +13,23 @@ import Text.Blaze.Html5.Attributes hiding (title)
 import Text.Blaze.Renderer.Utf8 (renderMarkup)
 import qualified Text.Blaze.Renderer.Text as TextRenderer
 import qualified Data.Text as T
+import Data.Time.Format
 
 
 data Page = Page
   { pageTitle :: Markup
   , pageDescription :: Markup
+  , pageUrl :: Text
+  , pageInfo :: Maybe PageInfo
   , sidebarTop :: Markup
   , sidebarBottom :: Markup
   , mainContent :: Markup
+  }
+
+data PageInfo = PageInfo
+  { pageKeywords :: NonEmpty Keyword
+  , pageCreated :: Day
+  , pageUpdated :: Day
   }
 
 standardPage :: Page -> BL.ByteString
@@ -29,18 +38,39 @@ standardPage Page{..} = renderMarkup $ html $ do
     title pageTitle
     meta ! charset "UTF-8"
     meta ! name "viewport" ! content "width=device-width, initial-scale=1.0"
-    meta ! name "description" ! (content $ toAttr pageDescription)
+    meta ! name "description" ! content (toAttr pageDescription)
     link ! rel "shortcut icon" ! href "/img/favicon.ico"
     link ! rel "icon" ! type_ "image/png" ! href "/img/favicon.png" ! sizes "32x32"
     link ! rel "apple-touch-icon" ! sizes "180x180" ! href "/img/apple-touch-icon.png"
     meta ! name "msapplication-TileColor" ! content "#ffffff"
     meta ! name "msapplication-TileImage" ! content "/img/mstile-144x144.png"
 
+    -- Open graph protocol. See http://ogp.me/ for more information.
+    meta ! customAttribute "property" "og:title" ! content (toAttr pageTitle)
+    meta ! customAttribute "property" "og:description" ! content (toAttr pageDescription)
+    meta ! customAttribute "property" "og:locale" ! content "en_US" -- TODO: Add i18n
+    meta ! customAttribute "property" "og:site_name" ! content "Anton Lorenzen's blog"
+    meta ! customAttribute "property" "og:url" ! content (toValue pageUrl)
+    case pageInfo of
+      Nothing -> meta ! customAttribute "property" "og:type" ! content "website"
+      Just PageInfo{..} -> do
+        meta ! customAttribute "property" "og:type" ! content "article"
+        meta ! customAttribute "property" "og:article:published_time"
+             ! content (toValue $ formatTime defaultTimeLocale "%F" pageCreated)
+        meta ! customAttribute "property" "og:article:modified_time"
+             ! content (toValue $ formatTime defaultTimeLocale "%F" pageUpdated)
+        meta ! customAttribute "property" "og:article:author" ! content "Anton Felix Lorenzen"
+        forM_ pageKeywords $ \kw -> do
+          meta ! customAttribute "property" "og:article:tag" ! content (toValue $ displayTitle kw)
+    meta ! customAttribute "property" "og:image" ! content "https://anfelor.github.io/img/anfelor_profile.jpg"
+
+    -- Twitter cards
     meta ! name "twitter:card" ! content "summary"
     meta ! name "twitter:site" ! content "@anton_lorenzen"
     meta ! name "twitter:title" ! content (toAttr pageTitle)
     meta ! name "twitter:description" ! content (toAttr pageDescription)
     meta ! name "twitter:image" ! content "https://anfelor.github.io/img/anfelor_profile.jpg"
+
     link ! rel "stylesheet" ! href "https://unpkg.com/purecss@0.6.2/build/pure-min.css"
          ! customAttribute "integrity" "sha384-UQiGfs9ICog+LwheBSRCt1o5cbyKIHbwjWscjemyBMT9YCUMZffs6UqUTd0hObXD"
          ! customAttribute "crossorigin" "anonymous"
@@ -77,6 +107,8 @@ renderFrontPage :: (Enum a, Bounded a, Display a) => Maybe a -> [Headline] -> BL
 renderFrontPage ma headlines = standardPage $ Page
   { pageTitle = toMarkup $ maybe "Posts" displayTitle ma
   , pageDescription = toMarkup $ maybe "" displayDescription ma
+  , pageUrl = url
+  , pageInfo = Nothing
   , sidebarTop = ul ! class_ "pure-menu-list"
         $ forM_ ([minBound .. maxBound] :: [Category]) $ \c ->
             li ! class_ "pure-menu-item"
@@ -92,6 +124,8 @@ renderFrontPage ma headlines = standardPage $ Page
             a ! href (stringValue . ("/blog/"<>) . T.unpack $ headlineURL) $ toMarkup $ headlineTitle
           p $ preEscapedString $ headlineAbstract
   }
+  where
+    url = maybe "" displayUrl ma
 
 
 headersMinusTwo :: Pandoc -> Pandoc
@@ -112,6 +146,12 @@ renderPage :: (Text, Entry Pandoc) -> BL.ByteString
 renderPage (url, Entry{..}) = standardPage $ Page
   { pageTitle = toMarkup entryTitle
   , pageDescription = toMarkup $ writeHtml def entryAbstract
+  , pageUrl = url
+  , pageInfo = Just $ PageInfo
+    { pageKeywords = entryKeywords
+    , pageCreated = entryCreated
+    , pageUpdated = entryUpdated
+    }
   -- TODO: Use the level information to build a nested tree of headlines.
   , sidebarTop = ul ! class_ "pure-menu-list"
       $ forM_ (allHeaders entryContent) $ \(_, nm) -> do
