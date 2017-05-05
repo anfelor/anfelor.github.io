@@ -8,7 +8,6 @@ entry = Entry
   , entryCreated = fromGregorian 2017 04 26
   , entryUpdated = fromGregorian 2017 04 26
   , entryKeywords = [Blogging]
-  , entryCategory = []
   , entryLanguage = English
   , entryComments = Github
   , entryAbstract = [md|

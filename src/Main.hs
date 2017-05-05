@@ -28,22 +28,13 @@ writeFiles entries = do
   setCurrentDirectory "blog"
 
   BL.writeFile "index.html"
-    $ renderFrontPage (Nothing :: Maybe Category)
+    $ renderFrontPage Nothing
     $ entriesToHeadline entries
-
-  let cats = [minBound .. maxBound] :: [Category]
-  forM_ cats $ \c -> do
-    let name = T.unpack $ displayUrl c
-    let entr = filterEntries c entries
-    createDirectoryIfMissing False name
-    BL.writeFile (name </> "index.html")
-      $ renderFrontPage (Just c)
-      $ entriesToHeadline entr
 
   let keys = [minBound .. maxBound] :: [Keyword]
   forM_ keys $ \k -> do
     let name = T.unpack $ displayUrl k
-    let entr = filterEntries k entries
+    let entr = filter ((k `elem`) . entryKeywords . snd) $ entries
     createDirectoryIfMissing False name
     BL.writeFile (name </> "index.html")
       $ renderFrontPage (Just k)
@@ -72,12 +63,3 @@ writeFiles entries = do
         , ("geometry", "margin=3cm")
         ]
       }
-
-class (Bounded a, Enum a, Display a) => FrontpageItem a where
-  filterEntries :: a -> [(b, Entry c)] -> [(b, Entry c)]
-
-instance FrontpageItem Category where
-  filterEntries c = filter ((c`elem`) . entryCategory . snd)
-
-instance FrontpageItem Keyword where
-  filterEntries k = filter ((k`elem`) . entryKeywords . snd)

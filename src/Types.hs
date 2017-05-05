@@ -11,7 +11,6 @@ data Entry a = Entry
   , entryCreated :: Day
   , entryUpdated :: Day
   , entryKeywords :: NonEmpty Keyword
-  , entryCategory :: [Category]
   , entryLanguage :: Language
   , entryAbstract :: a
   , entryContent :: a
@@ -36,7 +35,6 @@ data Headline = Headline
   { headlineTitle :: Text
   , headlineCreated :: Day
   , headlineUpdated :: Day
-  , headlineCategory :: [Category]
   , headlineKeywords :: NonEmpty Keyword
   , headlineURL :: Text
   , headlineAbstract :: String
@@ -71,32 +69,10 @@ entriesToHeadline = fmap go
       { headlineTitle = entryTitle
       , headlineCreated = entryCreated
       , headlineUpdated = entryUpdated
-      , headlineCategory = entryCategory
       , headlineKeywords = entryKeywords
       , headlineAbstract = writeHtmlString def entryAbstract
       , headlineURL = url
       }
-
-
-
--- | Every blog post can be in several categories.
--- They might be used for separate rss streams in the future.
--- There should be 3-10 constructors.
--- Please consider using a simple keyword first.
-data Category
-  = Haskell
-  | ReadingList
-  | ShortStories
-  deriving (Eq, Bounded, Enum, Show)
-
-instance Display Category where
-  displayTitle Haskell = "Haskell"
-  displayTitle ReadingList = "My reading list"
-  displayTitle ShortStories = "Short stories"
-
-  displayDescription Haskell = "Haskell is a functional programming language; I try to explain it's concepts."
-  displayDescription ReadingList = "I set myself a goal of reading a book a week and write a small entry about each."
-  displayDescription ShortStories = "I am writing short stories about places, people and things, that left an impression."
 
 
 -- | The language of a blog post.
@@ -119,6 +95,18 @@ data Comments
 -- the number of keywords is limited to 100-1000.
 data Keyword
  = Blogging
+ | Haskell
+ | ReadingList
+ | ShortStories
  deriving (Eq, Bounded, Enum, Show)
 
 instance Display Keyword where
+  displayTitle Haskell = "Haskell"
+  displayTitle ReadingList = "My reading list"
+  displayTitle ShortStories = "Short stories"
+  displayTitle Blogging = "General information"
+
+  displayDescription Haskell = "Haskell is a functional programming language; I try to explain it's concepts."
+  displayDescription ReadingList = "I set myself a goal of reading a book a week and write a small entry about each."
+  displayDescription ShortStories = "I am writing short stories about places, people and things, that left an impression."
+  displayDescription Blogging = "This is a catch-all category for the maintenance of this blog."

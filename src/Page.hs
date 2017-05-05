@@ -106,14 +106,14 @@ standardPage Page{..} = renderMarkup $ do
     toAttr = toValue . TextRenderer.renderMarkup . contents
 
 
-renderFrontPage :: (Enum a, Bounded a, Display a) => Maybe a -> [Headline] -> BL.ByteString
+renderFrontPage :: Maybe Keyword -> [Headline] -> BL.ByteString
 renderFrontPage ma headlines = standardPage $ Page
   { pageTitle = toMarkup $ maybe "Posts" displayTitle ma
   , pageDescription = toMarkup $ maybe "" displayDescription ma
   , pageUrl = url
   , pageInfo = Nothing
   , sidebarTop = ul ! class_ "pure-menu-list"
-        $ forM_ ([minBound .. maxBound] :: [Category]) $ \c ->
+        $ forM_ ([minBound .. maxBound] :: [Keyword]) $ \c ->
             li ! class_ "pure-menu-item"
               $ a ! class_ "pure-menu-link" ! href (stringValue $ T.unpack $ "/blog/" <> displayUrl c <> "/")
                   $ toMarkup $ displayTitle c
