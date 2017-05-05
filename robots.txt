@@ -3,5 +3,16 @@
 
 User-agent: *
 Sitemap: /sitemap.xml
-# Disallow: /path/to/file.html
-# Disallow: /path/to/dir/
+Disallow: /src/
+Disallow: /.git/
+Disallow: /.gitignore
+Disallow: /.sosrc
+Disallow: /blog.cabal
+Disallow: /index.html
+Disallow: /LICENSE
+Disallow: /package.yaml
+Disallow: /README.md
+Disallow: /robots.txt
+Disallow: /Setup.hs
+Disallow: /sitemap.xml
+Disallow: /stack.yaml
