@@ -25,8 +25,8 @@ executable blog
   main-is: Main.hs
   hs-source-dirs:
       src
-  default-extensions: DeriveFunctor NoImplicitPrelude OverloadedLists OverloadedStrings QuasiQuotes RecordWildCards TemplateHaskell
-  ghc-options: -Wall -Werror -Wno-missing-signatures -Wno-unused-do-bind -optl-fuse-ld=gold
+  default-extensions: DeriveFunctor NoImplicitPrelude OverloadedLists OverloadedStrings QuasiQuotes RecordWildCards TemplateHaskell GeneralizedNewtypeDeriving
+  ghc-options: -Wall -Wno-missing-signatures -Wno-unused-do-bind -optl-fuse-ld=gold
   ld-options: -fuse-ld=gold
   build-depends:
       base >= 4.7 && < 5
@@ -36,6 +36,7 @@ executable blog
     , containers
     , directory
     , filepath
+    , hashable
     , mtl
     , pandoc
     , pandoc-types
@@ -47,7 +48,7 @@ executable blog
     , time
     , unordered-containers
   if flag(production)
-    ghc-options: -O2
+    ghc-options: -O2 -Werror
   else
     ghc-options: -O0 -dynamic
   other-modules:

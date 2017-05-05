@@ -54,8 +54,9 @@ addEntryURLs = fmap fst . flip runStateT Set.empty . mapM go . sort
     go e@Entry{..} = do
       used <- get
       let poss = fmap (T.intercalate "-" . fmap displayUrl) $ permutations $ toList entryKeywords
-          url = fmap (\p -> [txt|posts/#{displayUrl entryTitle}-#{p}.html|]) poss
-          choose = filter (`notElem` used) url
+          title = displayUrl entryTitle
+          urls = fmap (\p -> [txt|posts/#{title}-#{p}.html|]) poss
+          choose = filter (`notElem` used) urls
       case choose of
         [] -> lift (Left e)
         (x:_) -> do

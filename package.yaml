@@ -12,11 +12,11 @@ flags:
 when:
   - condition: flag(production)
     then:
-      ghc-options: -O2
+      ghc-options: -O2 -Werror
     else:
       ghc-options: -O0 -dynamic
 
-ghc-options: -Wall -Werror -Wno-missing-signatures -Wno-unused-do-bind -optl-fuse-ld=gold
+ghc-options: -Wall -Wno-missing-signatures -Wno-unused-do-bind -optl-fuse-ld=gold
 ld-options:  -fuse-ld=gold
 
 default-extensions:
@@ -27,6 +27,7 @@ default-extensions:
   - QuasiQuotes
   - RecordWildCards
   - TemplateHaskell
+  - GeneralizedNewtypeDeriving 
 
 dependencies:
   - base >= 4.7 && < 5
@@ -36,6 +37,7 @@ dependencies:
   - containers
   - directory
   - filepath
+  - hashable
   - mtl
   - pandoc
   - pandoc-types

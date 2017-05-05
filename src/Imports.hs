@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleInstances #-}
+
 module Imports
   ( module Exports
   , module Imports
@@ -11,6 +13,7 @@ import Data.List.NonEmpty as Exports (NonEmpty)
 import Data.String as Exports
 import Data.Text as Exports (Text)
 import Data.Time as Exports (Day, fromGregorian)
+import Data.Hashable as Exports
 
 import System.Directory as Exports
 import System.FilePath as Exports
@@ -42,20 +45,21 @@ class Show a => Display a where
     where
       go :: Text -> Char -> Text
       go t c = case () of
-        _ | isUpper c && isLower (T.last t) -> t <> "-" <> T.singleton (toLower c)
+        _ | isUpper c && isLetter (T.last t) -> t <> "-" <> T.singleton (toLower c)
+          | isUpper c -> T.snoc t (toLower c)
           | c == ' '  -> case T.last t of
               '-' -> t
               _ -> T.snoc t '-'
           | otherwise -> T.snoc t c
 
       escape c = case c of
-        'ä' -> "ae"
-        'ö' -> "oe"
-        'ü' -> "ue"
-        'Ä' -> "Ae"
-        'Ö' -> "Oe"
-        'Ü' -> "Ue"
-        _ | isAlphaNum c -> T.singleton c
+        -- 'ä' -> "ae"
+        -- 'ö' -> "oe"
+        -- 'ü' -> "ue"
+        -- 'Ä' -> "Ae"
+        -- 'Ö' -> "Oe"
+        -- 'Ü' -> "Ue"
+        _ | isAlphaNum c || c == ' ' -> T.singleton c
         _ -> ""
 
   -- | Allows you to keep the default implementation of the
@@ -64,9 +68,8 @@ class Show a => Display a where
   displayShow :: a -> Text
   displayShow = show
 
-instance Display T.Text where
-  displayShow = identity
-
+instance Display Text where
+  displayShow = T.map toLower
 
 md :: QuasiQuoter
 md = QuasiQuoter

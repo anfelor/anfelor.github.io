@@ -143,11 +143,10 @@ headersMinusTwo = walk go
     go (Header n attr inl) = Header (n+1) attr inl
     go block = block
 
-allHeaders :: Pandoc -> [(Int, Html)]
+allHeaders :: Pandoc -> [(Int, Pandoc)]
 allHeaders pan@(Pandoc mt _)= query go pan
   where
-    go :: Block -> [(Int, Html)]
-    go (Header n _ inl) = [(n, writeHtml def (Pandoc mt [Plain inl]))]
+    go (Header n _ inl) = [(n, Pandoc mt [Plain inl])]
     go _ = []
 
 renderPage :: (Text, Entry Pandoc) -> BL.ByteString
@@ -165,8 +164,8 @@ renderPage (url, Entry{..}) = standardPage $ Page
       $ forM_ (allHeaders entryContent) $ \(_, nm) -> do
          li ! class_ "pure-menu-item"
             $ a ! class_ "pure-menu-link"
-                ! href (stringValue $ format $ renderMarkup $ contents nm)
-                $ nm
+                ! href (stringValue $ ('#':) . T.unpack . displayUrl . T.pack $ writePlain def nm)
+                $ writeHtml def nm
   , sidebarBottom = ul ! class_ "pure-menu-list" $ do
       li ! class_ "pure-menu-item" $ a ! class_ "pure-menu-link"
                                        ! href commentUrl $ commentText
@@ -180,11 +179,3 @@ renderPage (url, Entry{..}) = standardPage $ Page
     (commentUrl, commentText) = case entryComments of
       Reddit t -> (toValue t, "Comment on Reddit")
       Github -> ("https://github.com/anfelor/anfelor.github.io/issues/new", "Comment on Github")
-
-    format :: BL.ByteString -> String
-    format = ('#':) . fmap (chr . fromIntegral) . BL.unpack . BL.map go
-      where
-        go :: Word8 -> Word8
-        go c = if (chr $ fromIntegral c) == ' '
-          then fromIntegral $ ord '-'
-          else fromIntegral . ord . toLower . chr $ fromIntegral c
