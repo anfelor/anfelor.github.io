@@ -2,7 +2,7 @@
 
 
 User-agent: *
-Sitemap: /sitemap.xml
+Sitemap: https://anfelor.github.io/sitemap.xml
 Disallow: /.git/
 Disallow: /src/
 Disallow: /blog.cabal
