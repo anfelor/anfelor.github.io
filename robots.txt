@@ -3,14 +3,14 @@
 
 User-agent: *
 Sitemap: /sitemap.xml
-Disallow: /src/
 Disallow: /.git/
-Disallow: /.gitignore
-Disallow: /.sosrc
+Disallow: /src/
 Disallow: /blog.cabal
+Disallow: /.gitignore
 Disallow: /index.html
 Disallow: /LICENSE
 Disallow: /package.yaml
 Disallow: /README.md
 Disallow: /Setup.hs
+Disallow: /.sosrc
 Disallow: /stack.yaml
