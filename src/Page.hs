@@ -37,11 +37,16 @@ standardPage Page{..} = renderMarkup $ do
   docType
   html ! lang "en_US" $ do
     head $ do
+      let url = "https://anfelor.github.io/blog/" <> pageUrl
+
       title pageTitle
       meta ! charset "UTF-8"
       meta ! name "viewport" ! content "width=device-width, initial-scale=1.0"
       meta ! name "description" ! content (toAttr pageDescription)
       meta ! name "author" ! content "Anton Felix Lorenzen"
+
+      link ! rel "canonical" ! href (toValue url)
+
       link ! rel "shortcut icon" ! href "/img/favicon.ico"
       link ! rel "icon" ! type_ "image/png" ! href "/img/favicon.png" ! sizes "32x32"
       link ! rel "apple-touch-icon" ! sizes "180x180" ! href "/img/apple-touch-icon.png"
@@ -53,7 +58,7 @@ standardPage Page{..} = renderMarkup $ do
       meta ! customAttribute "property" "og:description" ! content (toAttr pageDescription)
       meta ! customAttribute "property" "og:locale" ! content "en_US" -- TODO: Add i18n
       meta ! customAttribute "property" "og:site_name" ! content "Anton Lorenzen's blog"
-      meta ! customAttribute "property" "og:url" ! content (toValue pageUrl)
+      meta ! customAttribute "property" "og:url" ! content (toValue url)
       case pageInfo of
         Nothing -> meta ! customAttribute "property" "og:type" ! content "website"
         Just PageInfo{..} -> do
