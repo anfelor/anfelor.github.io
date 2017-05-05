@@ -4,10 +4,13 @@ import Imports
 import qualified Entries
 import Page
 import Types
+import Sitemap
 
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.Text as T
 import Text.Pandoc.PDF
+import Data.Time.Clock
+import Data.Time.Calendar
 
 main :: IO ()
 main = do
@@ -49,6 +52,36 @@ writeFiles entries = do
       Left b -> putStr ("Error while creating pdf: " <> b)
       Right b -> BL.writeFile (T.unpack u -<.> ".pdf") b
 
+  today <- utctDay <$> getCurrentTime
+  BL.writeFile "sitemap.xml" $ createSitemap $ (concat :: [[a]] -> [a])
+    [ flip map entries $ \(url, Entry{..}) ->
+        PageData
+          { pageLocation = url
+          , pageLastMod = entryUpdated
+          , pageType = Article entryImportance
+          }
+    , flip map entries $ \(url, Entry{..}) ->
+        PageData
+          { pageLocation = T.pack $ T.unpack url -<.> ".pdf"
+          , pageLastMod = entryUpdated
+          , pageType = Article entryImportance
+          }
+    , flip map ([minBound .. maxBound] :: [Keyword]) $ \k -> do
+        PageData
+          { pageLocation = displayUrl k
+          , pageLastMod = maximum
+              $ (addDays (-100000) today:)
+              $ map (entryUpdated . snd) $ filter ((k `elem`) . entryKeywords . snd) $ entries
+          , pageType = FrontPage
+          }
+    , (:[]) $ PageData
+      { pageLocation = "index.html"
+
+      -- there is only a recompilation, if something changed.
+      , pageLastMod = today
+      , pageType = FrontPage
+      }
+    ]
   where
     pdfOptions e tmpl = def
       { writerHighlight = True

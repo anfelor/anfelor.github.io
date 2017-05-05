@@ -10,6 +10,7 @@ entry = Entry
   , entryKeywords = [Blogging]
   , entryLanguage = German
   , entryComments = Github
+  , entryImportance = Ignore
   , entryAbstract = [md||]
   , entryContent = [md|
 

@@ -12,6 +12,7 @@ data Entry a = Entry
   , entryUpdated :: Day
   , entryKeywords :: NonEmpty Keyword
   , entryLanguage :: Language
+  , entryImportance :: Importance
   , entryAbstract :: a
   , entryContent :: a
   , entryComments :: Comments
@@ -76,6 +77,16 @@ entriesToHeadline = fmap go
       }
 
 
+data PageData = PageData
+  { pageLocation :: Text
+  , pageLastMod :: Day
+  , pageType :: PageType
+  } deriving (Eq, Show)
+
+data PageType = Article Importance | FrontPage
+  deriving (Eq, Show)
+
+
 -- | The language of a blog post.
 data Language
   = English
@@ -89,6 +100,12 @@ data Comments
  | Github -- ^ open a new issue on github.
  deriving (Eq, Show)
 
+
+data Importance
+  = Ignore
+  | Normal
+  | Promote
+  deriving (Eq, Show)
 
 -- | The keywords for a blog post.
 -- Using Data types instead of text has the advantage,

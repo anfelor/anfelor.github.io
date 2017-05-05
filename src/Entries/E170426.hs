@@ -10,6 +10,7 @@ entry = Entry
   , entryKeywords = [Blogging]
   , entryLanguage = English
   , entryComments = Github
+  , entryImportance = Normal
   , entryAbstract = [md|
 
 This is my first blog post. In it I explore the rich world of lorem ipsums.
