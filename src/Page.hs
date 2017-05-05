@@ -33,72 +33,75 @@ data PageInfo = PageInfo
   }
 
 standardPage :: Page -> BL.ByteString
-standardPage Page{..} = renderMarkup $ html $ do
-  head $ do
-    title pageTitle
-    meta ! charset "UTF-8"
-    meta ! name "viewport" ! content "width=device-width, initial-scale=1.0"
-    meta ! name "description" ! content (toAttr pageDescription)
-    link ! rel "shortcut icon" ! href "/img/favicon.ico"
-    link ! rel "icon" ! type_ "image/png" ! href "/img/favicon.png" ! sizes "32x32"
-    link ! rel "apple-touch-icon" ! sizes "180x180" ! href "/img/apple-touch-icon.png"
-    meta ! name "msapplication-TileColor" ! content "#ffffff"
-    meta ! name "msapplication-TileImage" ! content "/img/mstile-144x144.png"
+standardPage Page{..} = renderMarkup $ do
+  docType
+  html ! lang "en_US" $ do
+    head $ do
+      title pageTitle
+      meta ! charset "UTF-8"
+      meta ! name "viewport" ! content "width=device-width, initial-scale=1.0"
+      meta ! name "description" ! content (toAttr pageDescription)
+      meta ! name "author" ! content "Anton Felix Lorenzen"
+      link ! rel "shortcut icon" ! href "/img/favicon.ico"
+      link ! rel "icon" ! type_ "image/png" ! href "/img/favicon.png" ! sizes "32x32"
+      link ! rel "apple-touch-icon" ! sizes "180x180" ! href "/img/apple-touch-icon.png"
+      meta ! name "msapplication-TileColor" ! content "#ffffff"
+      meta ! name "msapplication-TileImage" ! content "/img/mstile-144x144.png"
 
-    -- Open graph protocol. See http://ogp.me/ for more information.
-    meta ! customAttribute "property" "og:title" ! content (toAttr pageTitle)
-    meta ! customAttribute "property" "og:description" ! content (toAttr pageDescription)
-    meta ! customAttribute "property" "og:locale" ! content "en_US" -- TODO: Add i18n
-    meta ! customAttribute "property" "og:site_name" ! content "Anton Lorenzen's blog"
-    meta ! customAttribute "property" "og:url" ! content (toValue pageUrl)
-    case pageInfo of
-      Nothing -> meta ! customAttribute "property" "og:type" ! content "website"
-      Just PageInfo{..} -> do
-        meta ! customAttribute "property" "og:type" ! content "article"
-        meta ! customAttribute "property" "og:article:published_time"
-             ! content (toValue $ formatTime defaultTimeLocale "%F" pageCreated)
-        meta ! customAttribute "property" "og:article:modified_time"
-             ! content (toValue $ formatTime defaultTimeLocale "%F" pageUpdated)
-        meta ! customAttribute "property" "og:article:author" ! content "Anton Felix Lorenzen"
-        forM_ pageKeywords $ \kw -> do
-          meta ! customAttribute "property" "og:article:tag" ! content (toValue $ displayTitle kw)
-    meta ! customAttribute "property" "og:image" ! content "https://anfelor.github.io/img/anfelor_profile.jpg"
+      -- Open graph protocol. See http://ogp.me/ for more information.
+      meta ! customAttribute "property" "og:title" ! content (toAttr pageTitle)
+      meta ! customAttribute "property" "og:description" ! content (toAttr pageDescription)
+      meta ! customAttribute "property" "og:locale" ! content "en_US" -- TODO: Add i18n
+      meta ! customAttribute "property" "og:site_name" ! content "Anton Lorenzen's blog"
+      meta ! customAttribute "property" "og:url" ! content (toValue pageUrl)
+      case pageInfo of
+        Nothing -> meta ! customAttribute "property" "og:type" ! content "website"
+        Just PageInfo{..} -> do
+          meta ! customAttribute "property" "og:type" ! content "article"
+          meta ! customAttribute "property" "og:article:published_time"
+              ! content (toValue $ formatTime defaultTimeLocale "%F" pageCreated)
+          meta ! customAttribute "property" "og:article:modified_time"
+              ! content (toValue $ formatTime defaultTimeLocale "%F" pageUpdated)
+          meta ! customAttribute "property" "og:article:author" ! content "Anton Felix Lorenzen"
+          forM_ pageKeywords $ \kw -> do
+            meta ! customAttribute "property" "og:article:tag" ! content (toValue $ displayTitle kw)
+      meta ! customAttribute "property" "og:image" ! content "https://anfelor.github.io/img/anfelor_profile.jpg"
 
-    -- Twitter cards
-    meta ! name "twitter:card" ! content "summary"
-    meta ! name "twitter:site" ! content "@anton_lorenzen"
-    meta ! name "twitter:title" ! content (toAttr pageTitle)
-    meta ! name "twitter:description" ! content (toAttr pageDescription)
-    meta ! name "twitter:image" ! content "https://anfelor.github.io/img/anfelor_profile.jpg"
+      -- Twitter cards
+      meta ! name "twitter:card" ! content "summary"
+      meta ! name "twitter:site" ! content "@anton_lorenzen"
+      meta ! name "twitter:title" ! content (toAttr pageTitle)
+      meta ! name "twitter:description" ! content (toAttr pageDescription)
+      meta ! name "twitter:image" ! content "https://anfelor.github.io/img/anfelor_profile.jpg"
 
-    link ! rel "stylesheet" ! href "https://unpkg.com/purecss@0.6.2/build/pure-min.css"
-         ! customAttribute "integrity" "sha384-UQiGfs9ICog+LwheBSRCt1o5cbyKIHbwjWscjemyBMT9YCUMZffs6UqUTd0hObXD"
-         ! customAttribute "crossorigin" "anonymous"
-    link ! rel "stylesheet" ! href "https://unpkg.com/purecss@0.6.2/build/grids-responsive-min.css"
-    Text.Blaze.Html5.style $ toMarkup ($(loadCss) :: Text)
-  body $ do
-    div ! id "layout" $ do
-      -- Hamburger menu
-      a ! href "#menu" ! id "menuLink" ! class_ "menu-link"
-        $ Text.Blaze.Html5.span $ mempty
-      div ! id "menu" $ do
-        div ! class_ "pure-menu" $ do
-          a ! class_ "pure-menu-heading" ! href "/blog" $ "Anton Felix Lorenzen"
-          sidebarTop
-        div ! class_ "pure-menu menu-bottom" $ do
-          sidebarBottom
-      div ! id "main" $ do
-        div ! class_ "header" $ do
-          h1 pageTitle
-          p pageDescription
-        div ! class_ "content" $ do
-          mainContent
-        div ! class_ "footer" $ do
-          div ! id "imprint-link" $ do
-            a ! href "/blog/imprint.html" $ "Imprint"
-          div ! id "privacy-link" $ do
-            a ! href "/blog/privacy.html" $ "Privacy"
-    script $ toMarkup ($(loadJavaScript) :: Text)
+      link ! rel "stylesheet" ! href "https://unpkg.com/purecss@0.6.2/build/pure-min.css"
+          ! customAttribute "integrity" "sha384-UQiGfs9ICog+LwheBSRCt1o5cbyKIHbwjWscjemyBMT9YCUMZffs6UqUTd0hObXD"
+          ! customAttribute "crossorigin" "anonymous"
+      link ! rel "stylesheet" ! href "https://unpkg.com/purecss@0.6.2/build/grids-responsive-min.css"
+      Text.Blaze.Html5.style $ toMarkup ($(loadCss) :: Text)
+    body $ do
+      div ! id "layout" $ do
+        -- Hamburger menu
+        a ! href "#menu" ! id "menuLink" ! class_ "menu-link"
+          $ Text.Blaze.Html5.span $ mempty
+        div ! id "menu" $ do
+          div ! class_ "pure-menu" $ do
+            a ! class_ "pure-menu-heading" ! href "/blog" $ "Anton Felix Lorenzen"
+            sidebarTop
+          div ! class_ "pure-menu menu-bottom" $ do
+            sidebarBottom
+        div ! id "main" $ do
+          div ! class_ "header" $ do
+            h1 pageTitle
+            p pageDescription
+          div ! class_ "content" $ do
+            mainContent
+          div ! class_ "footer" $ do
+            div ! id "imprint-link" $ do
+              a ! href "/blog/imprint.html" $ "Imprint"
+            div ! id "privacy-link" $ do
+              a ! href "/blog/privacy.html" $ "Privacy"
+      script $ toMarkup ($(loadJavaScript) :: Text)
   where
     toAttr = toValue . TextRenderer.renderMarkup . contents
 
