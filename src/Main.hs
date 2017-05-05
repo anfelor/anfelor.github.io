@@ -70,7 +70,7 @@ writeFiles entries = do
         PageData
           { pageLocation = displayUrl k
           , pageLastMod = maximum
-              $ (addDays (-50000) today:)
+              $ (addDays (-1000) today:)
               $ map (entryUpdated . snd) $ filter ((k `elem`) . entryKeywords . snd) $ entries
           , pageType = FrontPage
           }
