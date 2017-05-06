@@ -4,6 +4,7 @@ import Imports
 import Page
 import Types
 import Sitemap
+import Config
 
 import qualified Dhall
 
@@ -13,6 +14,7 @@ import qualified Data.Text.Lazy as TL
 import Text.Pandoc.PDF
 import Data.Time.Clock
 import Data.Time.Calendar
+
 
 main :: IO ()
 main = do
@@ -35,36 +37,24 @@ main = do
       fail $ "Couldn't create a unique url for entry:" <> show e
     Right en -> writeFiles en
 
+
 writeFiles :: [(Text, Entry Pandoc Day)] -> IO ()
 writeFiles entries = do
+  config@Config{..} <- readConfig
+
   removePathForcibly "blog"
   createDirectory "blog"
   setCurrentDirectory "blog"
 
-  BL.writeFile "index.html"
-    $ renderFrontPage Nothing
-    $ entriesToHeadline entries
+  writeFrontPages config entries
+  writeEntries config entries
+  writeSitemap config entries
 
-  let keys = [minBound .. maxBound] :: [Keyword]
-  forM_ keys $ \k -> do
-    let name = T.unpack $ displayUrl k
-    let entr = filter ((k `elem`) . entryKeywords . snd) $ entries
-    createDirectoryIfMissing False name
-    BL.writeFile (name </> "index.html")
-      $ renderFrontPage (Just k)
-      $ entriesToHeadline entr
 
-  latexTemplate <- readFile "../css/template.tex"
-  forM_ entries $ \(u, e) -> do
-    createDirectoryIfMissing False "posts"
-    BL.writeFile (T.unpack u) $ renderPage (u, e)
-    pdf <- makePDF "xelatex" writeLaTeX (pdfOptions e latexTemplate) (entryContent e)
-    case pdf of
-      Left b -> putStr ("Error while creating pdf: " <> b)
-      Right b -> BL.writeFile (T.unpack u -<.> ".pdf") b
-
+writeSitemap :: Config -> [(Text, Entry Pandoc Day)] -> IO ()
+writeSitemap config entries = do
   today <- utctDay <$> getCurrentTime
-  BL.writeFile "sitemap.xml" $ createSitemap $ (concat :: [[a]] -> [a])
+  BL.writeFile "sitemap.xml" $ createSitemap config $ (concat :: [[a]] -> [a])
     [ flip map entries $ \(url, Entry{..}) ->
         PageData
           { pageLocation = url
@@ -87,19 +77,42 @@ writeFiles entries = do
           }
     , (:[]) $ PageData
       { pageLocation = "index.html"
-
-      -- there is only a recompilation, if something changed.
-      , pageLastMod = today
+      , pageLastMod = maximum
+              $ (addDays (-1000) today:)
+              $ map (entryUpdated . snd) $ entries
       , pageType = FrontPage
       }
     ]
-  where
-    pdfOptions e tmpl = def
-      { writerHighlight = True
-      , writerTemplate = Just $ T.unpack tmpl
+
+
+writeFrontPages :: Config -> [(Text, Entry Pandoc Day)] -> IO ()
+writeFrontPages config entries = do
+  BL.writeFile "index.html"
+    $ renderFrontPage config Nothing
+    $ entriesToHeadline entries
+
+  let keys = [minBound .. maxBound] :: [Keyword]
+  forM_ keys $ \k -> do
+    let name = T.unpack $ displayUrl k
+    let entr = filter ((k `elem`) . entryKeywords . snd) $ entries
+    createDirectoryIfMissing False name
+    BL.writeFile (name </> "index.html")
+      $ renderFrontPage config (Just k)
+      $ entriesToHeadline entr
+
+
+writeEntries :: Config -> [(Text, Entry Pandoc Day)] -> IO ()
+writeEntries config@Config{..} entries = do
+  latexTemplate <- readFile (".." </> TL.unpack configLatexTemplate)
+  forM_ entries $ \(u, e) -> do
+    createDirectoryIfMissing False "posts"
+    BL.writeFile (T.unpack u) $ renderPage config (u, e)
+    let pdfOptions = def {
+        writerHighlight = True
+      , writerTemplate = Just $ T.unpack latexTemplate
       , writerVariables =
         [ ("title", TL.unpack $ entryTitle e)
-        , ("author", "Anton Felix Lorenzen")
+        , ("author", TL.unpack $ configAuthor)
         , ("documentclass", "article")
         , ("papersize", "a4")
         , ("fontsize", "12pt")
@@ -107,3 +120,7 @@ writeFiles entries = do
         , ("geometry", "margin=3cm")
         ]
       }
+    pdf <- makePDF "xelatex" writeLaTeX pdfOptions (entryContent e)
+    case pdf of
+      Left b -> putStr ("Error while creating pdf: " <> b)
+      Right b -> BL.writeFile (T.unpack u -<.> ".pdf") b

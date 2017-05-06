@@ -47,6 +47,7 @@ executable blog
     , text
     , time
     , unordered-containers
+    , vector
   if flag(production)
     ghc-options: -O2 -Werror
   else

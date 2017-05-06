@@ -4,6 +4,7 @@ module Page where
 
 import Imports hiding (head, link, div, map)
 import Types
+import Config
 import Dhall (Vector)
 
 import Text.Pandoc.Walk
@@ -33,8 +34,8 @@ data PageInfo = PageInfo
   , pageUpdated :: Day
   }
 
-standardPage :: Page -> BL.ByteString
-standardPage Page{..} = renderMarkup $ do
+standardPage :: Config -> Page -> BL.ByteString
+standardPage Config{..} Page{..} = renderMarkup $ do
   docType
   html ! lang "en_US" $ do
     head $ do
@@ -44,7 +45,7 @@ standardPage Page{..} = renderMarkup $ do
       meta ! charset "UTF-8"
       meta ! name "viewport" ! content "width=device-width, initial-scale=1.0"
       meta ! name "description" ! content (toAttr pageDescription)
-      meta ! name "author" ! content "Anton Felix Lorenzen"
+      meta ! name "author" ! content (toValue configAuthor)
 
       link ! rel "canonical" ! href (toValue url)
 
@@ -80,11 +81,11 @@ standardPage Page{..} = renderMarkup $ do
       meta ! name "twitter:description" ! content (toAttr pageDescription)
       meta ! name "twitter:image" ! content "https://anfelor.github.io/img/anfelor_profile.jpg"
 
-      link ! rel "stylesheet" ! href "https://unpkg.com/purecss@0.6.2/build/pure-min.css"
-          ! customAttribute "integrity" "sha384-UQiGfs9ICog+LwheBSRCt1o5cbyKIHbwjWscjemyBMT9YCUMZffs6UqUTd0hObXD"
-          ! customAttribute "crossorigin" "anonymous"
-      link ! rel "stylesheet" ! href "https://unpkg.com/purecss@0.6.2/build/grids-responsive-min.css"
-      link ! rel "stylesheet" ! href "/css/main.min.css"
+      forM_ configCss $ \CssConfig{..} -> do
+        link ! rel "stylesheet" ! href (toValue cssSrc)
+
+      forM_ (filter (\JsConfig{..} -> not jsAsLastElement) configJs) $ \JsConfig{..} -> do
+        script ! src (toValue jsSrc) $ ""
     body $ do
       div ! id "layout" $ do
         -- Hamburger menu
@@ -107,13 +108,14 @@ standardPage Page{..} = renderMarkup $ do
               a ! href "/blog/imprint.html" $ "Imprint"
             div ! id "privacy-link" $ do
               a ! href "/blog/privacy.html" $ "Privacy"
-      script ! src "/js/main.min.js" $ ""
+      forM_ (filter (\JsConfig{..} -> jsAsLastElement) configJs) $ \JsConfig{..} -> do
+        script ! src (toValue jsSrc) $ ""
   where
     toAttr = toValue . TextRenderer.renderMarkup . contents
 
 
-renderFrontPage :: Maybe Keyword -> [Headline] -> BL.ByteString
-renderFrontPage ma headlines = standardPage $ Page
+renderFrontPage :: Config -> Maybe Keyword -> [Headline] -> BL.ByteString
+renderFrontPage config@Config{..} ma headlines = standardPage config $ Page
   { pageTitle = toMarkup $ maybe "Posts" displayTitle ma
   , pageDescription = toMarkup $ maybe "" displayDescription ma
   , pageUrl = url
@@ -150,8 +152,8 @@ allHeaders pan@(Pandoc mt _)= query go pan
     go (Header n _ inl) = [(n, Pandoc mt [Plain inl])]
     go _ = []
 
-renderPage :: (Text, Entry Pandoc Day) -> BL.ByteString
-renderPage (url, Entry{..}) = standardPage $ Page
+renderPage :: Config -> (Text, Entry Pandoc Day) -> BL.ByteString
+renderPage config@Config{..} (url, Entry{..}) = standardPage config $ Page
   { pageTitle = toMarkup entryTitle
   , pageDescription = toMarkup $ writeHtml def entryAbstract
   , pageUrl = url
