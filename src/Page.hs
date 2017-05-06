@@ -84,7 +84,7 @@ standardPage Page{..} = renderMarkup $ do
           ! customAttribute "integrity" "sha384-UQiGfs9ICog+LwheBSRCt1o5cbyKIHbwjWscjemyBMT9YCUMZffs6UqUTd0hObXD"
           ! customAttribute "crossorigin" "anonymous"
       link ! rel "stylesheet" ! href "https://unpkg.com/purecss@0.6.2/build/grids-responsive-min.css"
-      Text.Blaze.Html5.style $ toMarkup ($(loadCss) :: Text)
+      link ! rel "stylesheet" ! href "/css/main.min.css"
     body $ do
       div ! id "layout" $ do
         -- Hamburger menu
@@ -107,7 +107,7 @@ standardPage Page{..} = renderMarkup $ do
               a ! href "/blog/imprint.html" $ "Imprint"
             div ! id "privacy-link" $ do
               a ! href "/blog/privacy.html" $ "Privacy"
-      script $ toMarkup ($(loadJavaScript) :: Text)
+      script ! src "/js/main.min.js" $ ""
   where
     toAttr = toValue . TextRenderer.renderMarkup . contents
 

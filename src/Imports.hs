@@ -24,11 +24,6 @@ import System.Process as Exports
 import Text.Pandoc as Exports hiding (Space, Format, Reader, Meta)
 
 import qualified Data.Text as T
-import Language.Haskell.TH
-import Language.Haskell.TH.Quote
-import qualified Prelude
-import GHC.IO.Handle
-import Data.List
 
 
 class Show a => Display a where
@@ -72,96 +67,3 @@ class Show a => Display a where
 
 instance Display Text where
   displayShow = T.map toLower
-
-md :: QuasiQuoter
-md = QuasiQuoter
-  { quoteExp = \e -> [| readMarkdown def $(extractVariables e)|]
-  , quotePat = undefined
-  , quoteType = undefined
-  , quoteDec = undefined
-  }
-
-rst :: QuasiQuoter
-rst = QuasiQuoter
-  { quoteExp = \e -> [| readRST def $(extractVariables e)|]
-  , quotePat = undefined
-  , quoteType = undefined
-  , quoteDec = undefined
-  }
-
-latex :: QuasiQuoter
-latex = QuasiQuoter
-  { quoteExp = \e -> [| readLaTeX def $(extractVariables e)|]
-  , quotePat = undefined
-  , quoteType = undefined
-  , quoteDec = undefined
-  }
-
-txt :: QuasiQuoter
-txt = QuasiQuoter
-  { quoteExp = extractVariables
-  , quotePat = undefined
-  , quoteType = undefined
-  , quoteDec = undefined
-  }
-
--- | Extract the variables from a string using Shakespeare-like escapes:
--- `[txt|Hello #{user}!|]`. Other constructs are not provided.
--- Supports variable interpolation and non-nested prefix application.
-extractVariables :: String -> ExpQ
-extractVariables s = go2 . snd $ go s [""]
-  where
-    go2 (x:y:xs) = [| $(litE $ stringL x) <> $(toVars $ trim y) <> $(go2 xs) |]
-    go2 (x:[]) = [| $(litE $ stringL x) |]
-    go2 [] = [| "" |]
-
-    trim = dropWhile (==' ') . dropWhileEnd (==' ')
-
-    toVars xs =
-      let (varName, rest) = dropWhile (==' ') <$> break (==' ') xs
-      in case rest of
-        [] -> dyn varName
-        str -> toVars' (appE (dyn varName)) str
-
-    toVars' apps xs =
-      let (varName, rest) = dropWhile (==' ') <$> break (==' ') xs
-      in case rest of
-        [] -> apps (dyn varName)
-        str -> toVars' (appE (apps (dyn varName))) str
-
-    go :: String -> [String] -> (String, [String])
-    go ('#':'{':xs) parts =
-      let (varName, _:rest) = break (=='}') xs
-          ("", p) = go rest parts
-      in ("", "":varName:p)
-    go ( x :xs) parts = (toHead ( x :)) <$> go xs parts
-    go [] parts = ("", parts)
-
-    toHead _ [] = undefined
-    toHead f (x:xs) = f x : xs
-
-
--- | Read a file at compile time, "returns" a string literal subject to OverloadedStrings.
-readFileCompileTime :: FilePath -> Q Exp
-readFileCompileTime = fmap (LitE . StringL) . runIO . Prelude.readFile
-
--- | Load the javascript in js/main.js at compile time
--- and return them as a string literal.
--- This compiles and uglifies the typescript data.
--- DANGER: This assumes uses relative paths and can only be run from the project root!
-loadJavaScript :: Q Exp
-loadJavaScript = fmap (LitE . StringL) . runIO $ do
-  _ <- createProcess (proc "tsc" ["-p", "js/"])
-  (_, Just hout, _, _) <- createProcess (proc "uglifyjs" ["js/main.js"])
-                                        { std_out = CreatePipe }
-  hGetContents hout
-
-
--- | Load the css in css/main.css at compile time
--- and return them as a string literal.
--- DANGER: This assumes uses relative paths and can only be run from the project root!
-loadCss :: Q Exp
-loadCss = fmap (LitE . StringL) . runIO $ do
-  (_, Just hout, _, _) <- createProcess (shell "sass css/main.scss | cssnano")
-                                        { std_out = CreatePipe }
-  hGetContents hout

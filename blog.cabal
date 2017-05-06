@@ -25,7 +25,7 @@ executable blog
   main-is: Main.hs
   hs-source-dirs:
       src
-  default-extensions: DeriveFunctor DeriveGeneric NoImplicitPrelude OverloadedLists OverloadedStrings QuasiQuotes RecordWildCards TemplateHaskell GeneralizedNewtypeDeriving
+  default-extensions: DeriveFunctor DeriveGeneric NoImplicitPrelude OverloadedLists OverloadedStrings RecordWildCards GeneralizedNewtypeDeriving
   ghc-options: -Wall -Wno-missing-signatures -Wno-unused-do-bind -optl-fuse-ld=gold
   ld-options: -fuse-ld=gold
   build-depends:
@@ -44,7 +44,6 @@ executable blog
     , process
     , protolude
     , split
-    , template-haskell
     , text
     , time
     , unordered-containers
@@ -53,6 +52,7 @@ executable blog
   else
     ghc-options: -O0 -dynamic
   other-modules:
+      Config
       Imports
       Page
       Sitemap

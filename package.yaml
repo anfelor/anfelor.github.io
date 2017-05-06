@@ -25,9 +25,7 @@ default-extensions:
   - NoImplicitPrelude
   - OverloadedLists
   - OverloadedStrings
-  - QuasiQuotes
   - RecordWildCards
-  - TemplateHaskell
   - GeneralizedNewtypeDeriving 
 
 dependencies:
@@ -46,7 +44,6 @@ dependencies:
   - process
   - protolude
   - split
-  - template-haskell
   - text
   - time
   - unordered-containers
