@@ -100,8 +100,8 @@ standardPage Config{..} Page{..} = renderMarkup $ do
         div ! id "main" $ do
           div ! class_ "header" $ do
             h1 pageTitle
-            p pageDescription
           div ! class_ "content" $ do
+            p pageDescription
             mainContent
           div ! class_ "footer" $ do
             div ! id "imprint-link" $ do

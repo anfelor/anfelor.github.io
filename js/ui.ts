@@ -2,7 +2,6 @@
 // The hamburger menu.
 // See https://purecss.io/layouts/side-menu/
 (function(window, document) {
-
     var layout = document.getElementById('layout');
     var menu = document.getElementById('menu');
     var menuLink = document.getElementById('menuLink');

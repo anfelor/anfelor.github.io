@@ -8,21 +8,21 @@
    - stack exec blog
    - tree blog/
 
-
-# External files (css, typescript)
- - patterns:
-   - ^([^\#\.]*\/)?([^\#\.\/\\]*\.(scss|ts))$
+# Sass
+ - pattern: ^css/main\.scss$
    commands:
+   - sass \0 | cssnano > css/main.min.css
 
-   # If the external file updated, it has to be
-   # included, thus we have to recompile the whole project.
-   - stack clean
-   - stack build --fast
-   - stack exec blog
+# TypeScript
+ - pattern: ^[^\#\.]*\.ts$
+   commands:
+   - tsc -p js/
+   - uglifyjs js/main.js > js/main.min.js
 
-# blog posts
+# dhall config and posts
  - patterns:
    - ^posts/[^\#\.]*$
+   - ^config.dhall$
    commands:
    - stack exec blog
    - tree blog/
