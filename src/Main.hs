@@ -16,16 +16,16 @@ import Data.Time.Calendar
 
 main :: IO ()
 main = do
-  posts <- filterM doesFileExist =<< listDirectory "posts"
+  posts <- filterM (doesFileExist . ("posts/"++)) =<< listDirectory "posts/"
   entries <- forM posts $ \p -> do
     ent <- Dhall.detailed $ Dhall.input
-      (Dhall.auto :: Dhall.Type (Entry TL.Text (Dhall.Natural, Dhall.Natural, Dhall.Natural)))
-      (TL.pack $ "./" ++ p)
-    let entry = entry {
-          entryCreated = (\(a,b,c) -> fromGregorian (fromIntegral a) (fromIntegral b) (fromIntegral c)) (entryCreated ent)
-        , entryUpdated = (\(a,b,c) -> fromGregorian (fromIntegral a) (fromIntegral b) (fromIntegral c)) (entryUpdated ent)
+      (Dhall.auto :: Dhall.Type (Entry TL.Text DhallDay))
+      (TL.pack $ "./posts/" ++ p)
+    let entry = ent {
+          entryCreated = (\DhallDay{..} -> fromGregorian (fromIntegral year) (fromIntegral month) (fromIntegral day)) (entryCreated ent)
+        , entryUpdated = (\DhallDay{..} -> fromGregorian (fromIntegral year) (fromIntegral month) (fromIntegral day)) (entryUpdated ent)
         }
-    case (readMarkdown def (entryAbstract entry), readMarkdown def (entryContent entry)) of
+    case (readMarkdown def (TL.unpack $ entryAbstract entry), readMarkdown def (TL.unpack $ entryContent entry)) of
       (Right p1, Right p2) -> pure $ entry {entryAbstract = p1, entryContent = p2}
       (Left p1, _) -> fail $ "Encountered pandoc error: " <> show p1
       (_, Left p2) -> fail $ "Encountered pandoc error: " <> show p2

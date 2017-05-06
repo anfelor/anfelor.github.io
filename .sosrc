@@ -19,3 +19,10 @@
    - stack clean
    - stack build --fast
    - stack exec blog
+
+# blog posts
+ - patterns:
+   - ^posts/[^\#\.]*$
+   commands:
+   - stack exec blog
+   - tree blog/

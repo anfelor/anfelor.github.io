@@ -4,6 +4,7 @@ module Page where
 
 import Imports hiding (head, link, div, map)
 import Types
+import Dhall (Vector)
 
 import Text.Pandoc.Walk
 import qualified Data.ByteString.Lazy as BL
@@ -27,7 +28,7 @@ data Page = Page
   }
 
 data PageInfo = PageInfo
-  { pageKeywords :: NonEmpty Keyword
+  { pageKeywords :: Vector Keyword
   , pageCreated :: Day
   , pageUpdated :: Day
   }

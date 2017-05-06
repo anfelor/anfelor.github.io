@@ -1,10 +1,10 @@
 { entryTitle = "Datenschutz"
-, entryCreated = (2017, 05, 04)
-, entryUpdated = (2017, 05, 04)
-, entryKeywords = [Blogging]
-, entryLanguage = German
-, entryComments = Github
-, entryImportance = Ignore
+, entryCreated = {year= +2017,month= +05,day= +04}
+, entryUpdated = {year= +2017,month= +05,day= +04}
+, entryKeywords = [ ../keywords/Blogging ]
+, entryLanguage = < German = {=} | English : {} >
+, entryComments = < Github = {=} | Reddit : { _redditUrl : Text } >
+, entryImportance = < Ignore = {=} | Normal : {} | Promote : {} >
 , entryAbstract = ""
 , entryContent = ''
 

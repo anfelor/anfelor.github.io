@@ -1,10 +1,10 @@
 { entryTitle = "Hello World!"
-, entryCreated = (2017, 04, 26)
-, entryUpdated = (2017, 04, 26)
-, entryKeywords = [Blogging]
-, entryLanguage = English
-, entryComments = Github
-, entryImportance = Normal
+, entryCreated = {year= +2017,month= +04,day= +26}
+, entryUpdated = {year= +2017,month= +04,day= +26}
+, entryKeywords = [ ../keywords/Blogging ]
+, entryLanguage = < English = {=} | German : {} >
+, entryComments = < Github = {=} | Reddit : { _redditUrl : Text } >
+, entryImportance = < Normal = {=} | Ignore : {} | Promote : {} >
 , entryAbstract = ''
 
 This is my first blog post. In it I explore the rich world of lorem ipsums.

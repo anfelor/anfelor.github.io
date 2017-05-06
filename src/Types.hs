@@ -3,22 +3,23 @@ module Types where
 import Imports hiding (Text)
 import qualified Data.HashSet as Set
 import qualified Data.Text as T
-import Dhall (Interpret(..), Natural, Text)
+import Dhall (Interpret(..), Natural, Text, Vector)
 
 
--- orphan instances
+data DhallDay = DhallDay
+  { year :: Natural
+  , month :: Natural
+  , day :: Natural
+  } deriving (Eq, Show, Generic)
 
-instance (Interpret a) => Interpret (NonEmpty a)
-instance (Interpret a) => Interpret [a]
-instance (Interpret a, Interpret b, Interpret c) => Interpret (a,b,c)
-
+instance Interpret DhallDay
 
 -- | A blog entry.
 data Entry a b = Entry
   { entryTitle :: Text
   , entryCreated :: b
   , entryUpdated :: b
-  , entryKeywords :: NonEmpty Keyword
+  , entryKeywords :: Vector Keyword
   , entryLanguage :: Language
   , entryImportance :: Importance
   , entryAbstract :: a
@@ -45,7 +46,7 @@ data Headline = Headline
   { headlineTitle :: Text
   , headlineCreated :: Day
   , headlineUpdated :: Day
-  , headlineKeywords :: NonEmpty Keyword
+  , headlineKeywords :: Vector Keyword
   , headlineURL :: T.Text
   , headlineAbstract :: String
   } deriving (Eq, Show)
@@ -107,7 +108,7 @@ instance Interpret Language
 
 -- | The place where comments should be posted.
 data Comments
- = Reddit Text
+ = Reddit {_redditUrl :: Text}
  | Github -- ^ open a new issue on github.
  deriving (Eq, Show, Generic)
 
