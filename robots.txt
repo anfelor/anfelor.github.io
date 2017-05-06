@@ -3,14 +3,14 @@
 
 User-agent: *
 Sitemap: https://anfelor.github.io/sitemap.xml
+
 Disallow: /.git/
-Disallow: /src/
-Disallow: /blog.cabal
+Disallow: /posts/
+Disallow: /keywords/
+
+Disallow: /config.dhall
 Disallow: /.gitignore
 Disallow: /index.html
 Disallow: /LICENSE
-Disallow: /package.yaml
 Disallow: /README.md
-Disallow: /Setup.hs
 Disallow: /.sosrc
-Disallow: /stack.yaml

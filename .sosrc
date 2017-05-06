@@ -1,13 +1,3 @@
-
-# Haskell files
- - patterns:
-   - ^[^\#\.]*\.hs$
-   - ^package.yaml$
-   commands:
-   - stack build --fast
-   - stack exec blog
-   - tree blog/
-
 # Sass
  - pattern: ^css/main\.scss$
    commands:
